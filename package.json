@@ -1,0 +1,20 @@
+{
+  "name": "prest-js-sdk",
+  "version": "0.1.0",
+  "description": "TypeScript SDK for pREST (PostgreSQL REST API) with typed filter DSL and optional Kratos auth",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "prepublishOnly": "npm run build",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "npm run build && changeset publish"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.27.10",
+    "typescript": "^5.7.2"
+  }
+}
