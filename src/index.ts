@@ -64,12 +64,17 @@ export interface PrestConfig {
 /**
  * Filter operators supported by pREST's `?field=op.value` syntax.
  * Mirrors `prest/adapters/postgres/postgres.go` GetQueryOperator (line ~1474).
+ *
+ * `tsquery` / `tsquery(cfg)` are SuffixType operators (see `adapters/postgres/postgres.go`
+ * `case "tsquery"` around line 463): they emit `<col>@@to_tsquery('<cfg>', '<val>')`
+ * when the config is supplied, or `<col>@@to_tsquery('<val>')` when omitted.
  */
 export type Operator =
   | "eq" | "ne" | "gt" | "gte" | "lt" | "lte"
   | "in" | "nin" | "any" | "some" | "all"
   | "null" | "notnull" | "true" | "nottrue" | "false" | "notfalse"
-  | "like" | "ilike" | "nlike" | "nilike";
+  | "like" | "ilike" | "nlike" | "nilike"
+  | "tsquery" | "tsquery(english)";
 
 export type OpValue = string | number | (string | number)[];
 
@@ -79,6 +84,8 @@ export type OpValue = string | number | (string | number)[];
  * - `{ field: value }` — shorthand for `{ field: { eq: value } }`
  * - `{ field: null }` — IS NULL
  * - `{ field: { op: value } }` — operator form, e.g. `{ age: { gt: 30 } }`
+ * - `{ field: tsquery("hello world") }` — Postgres FTS, e.g. `{ content_tsv: tsquery("deploy") }`
+ *   → `?content_tsv$tsquery=deploy`. Use the `tsquery()` helper from this package.
  *
  * Multiple fields are AND-ed. For OR across fields, use `SelectOpts.or`.
  */
@@ -147,8 +154,31 @@ function serializeOpValue(op: Operator, val: OpValue | undefined): string {
     const arr = Array.isArray(val) ? val : val === undefined ? [] : [val];
     return `${op}.(${arr.join(",")})`;
   }
+  // tsquery uses pREST's suffix syntax — emitted at the field level, not here.
+  // The serializer detects `op === "tsquery"` (or `tsquery(config)`) and skips
+  // the `op.` prefix; it just writes the raw search string.
+  if (op === "tsquery" || op.startsWith("tsquery(")) {
+    return val === undefined ? "" : String(val);
+  }
   const v = val === undefined ? "" : typeof val === "string" ? val : String(val);
   return `${op}.${v}`;
+}
+
+/**
+ * Marker for full-text search on a `*_tsv` column.
+ *
+ *   tsquery("hello world")           → ?col$tsquery=hello+world
+ *   tsquery("hello", "english")      → ?col$tsquery(english)=hello
+ *
+ * Use against the generated `*_tsv` columns (see migration
+ * 0111_add_postgres_fts.sql). The text is sent raw to pREST — no
+ * quoting or escaping — so prefer plain words. For relevance-ranked
+ * search, hit `/_QUERIES/lobehub/{messages,topics}SearchFts` instead
+ * (Tier 2 templates that wrap `ts_rank(...)`).
+ */
+export function tsquery(q: string, config?: string): { tsquery: string } | Record<string, string> {
+  if (config) return { [`tsquery(${config})`]: q };
+  return { tsquery: q };
 }
 
 /**
@@ -174,6 +204,12 @@ export function serializeFilter(filter: Filter): URLSearchParams {
     }
     if (typeof condition === "object" && !Array.isArray(condition)) {
       for (const [op, val] of Object.entries(condition)) {
+        if (op === "tsquery" || op.startsWith("tsquery(")) {
+          // pREST suffix syntax: the operator hangs off the field name with `$`,
+          // value is the raw search string (no `op.` prefix).
+          params.append(`${field}$${op}`, serializeOpValue(op as Operator, val as OpValue));
+          continue;
+        }
         params.append(field, serializeOpValue(op as Operator, val as OpValue));
       }
       continue;
@@ -382,7 +418,27 @@ export class PrestClient {
 
   // ─── CRUD ────────────────────────────────────────────────────────────────
 
-  /** `GET /{db}/{schema}/{table}` — SELECT with typed filter DSL. */
+  /**
+   * `GET /{db}/{schema}/{table}` — SELECT with typed filter DSL.
+   *
+   * For Postgres full-text search on a `*_tsv` column, use the `tsquery()` helper:
+   *
+   * ```ts
+   *   await client.select("lobehub", "public", "messages", {
+   *     where: { messages_tsv: tsquery("deploy failed") },
+   *     order: ["created_at:desc"],
+   *     size: 20,
+   *   });
+   *
+   *   // With explicit config:
+   *   await client.select("lobehub", "public", "topics", {
+   *     where: { topics_tsv: tsquery("deploy", "english") },
+   *   });
+   * ```
+   *
+   * For relevance-ranked search, use `client.query("lobehub", "messagesSearchFts", { q: ... })`
+   * instead — Tier 2 templates that wrap `ts_rank(...)`.
+   */
   select<T = unknown>(
     database: string,
     schema: string,
