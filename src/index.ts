@@ -570,6 +570,100 @@ export class PrestClient {
     this.setAuthToken(token);
     return token;
   }
+  // ─── Typed table client ──────────────────────────────────────────────────
+
+  /**
+   * Create a type-safe sub-client bound to a specific database, schema, and
+   * table map. All CRUD methods become constrained to the table map's keys
+   * and row types — no manual generics needed at call sites.
+   *
+   *   interface LobehubTables { agents: AgentRow; sessions: SessionRow; ... }
+   *   const db = client.forSchema<LobehubTables>("lobehub", "public");
+   *   const rows = await db.select("agents", { where: { user_id: "abc" } });
+   *   // rows is AgentRow[]
+   */
+  forSchema<Tables>(
+    database: string,
+    schema: string,
+  ): TypedPrestClient<Tables> {
+    return new TypedPrestClient(this, database, schema);
+  }
+}
+
+// ============================================================
+// Typed client — binds PrestClient to a table map
+// ============================================================
+
+/**
+ * Shape expected by TypedPrestClient — matches pg-to-ts's `TableTypes` output
+ * where each table maps to `{ select: RowType, input: InsertType }`.
+ */
+export interface TableMap {
+  [table: string]: { select: object; input: object };
+}
+
+// Helper types to extract select/input from table map entries
+type SelectOf<T> = T extends { select: infer S } ? S : never;
+type InputOf<T> = T extends { input: infer I } ? I : never;
+
+export class TypedPrestClient<Tables> {
+  constructor(
+    private readonly client: PrestClient,
+    private readonly database: string,
+    private readonly schema: string,
+  ) {}
+
+  select<K extends keyof Tables & string>(
+    table: K,
+    opts: SelectOpts = {},
+  ): Promise<SelectOf<Tables[K]>[]> {
+    return this.client.select(this.database, this.schema, table, opts);
+  }
+
+  insert<K extends keyof Tables & string>(
+    table: K,
+    data: InputOf<Tables[K]>,
+  ): Promise<SelectOf<Tables[K]>[]> {
+    return this.client.insert(
+      this.database,
+      this.schema,
+      table,
+      data as Record<string, unknown>,
+    );
+  }
+
+  insertBatch<K extends keyof Tables & string>(
+    table: K,
+    rows: InputOf<Tables[K]>[],
+  ): Promise<SelectOf<Tables[K]>[]> {
+    return this.client.insertBatch(
+      this.database,
+      this.schema,
+      table,
+      rows as unknown as Record<string, unknown>[],
+    );
+  }
+
+  update<K extends keyof Tables & string>(
+    table: K,
+    where: Filter,
+    data: Partial<InputOf<Tables[K]>>,
+  ): Promise<SelectOf<Tables[K]>[]> {
+    return this.client.update(
+      this.database,
+      this.schema,
+      table,
+      where,
+      data as Record<string, unknown>,
+    );
+  }
+
+  delete<K extends keyof Tables & string>(
+    table: K,
+    where: Filter,
+  ): Promise<SelectOf<Tables[K]>[]> {
+    return this.client.delete(this.database, this.schema, table, where);
+  }
 }
 
 // ============================================================
