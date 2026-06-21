@@ -9,6 +9,10 @@ TypeScript SDK for pREST (PostgreSQL REST API). Wraps pREST's HTTP routes with r
 - Base branch: `master`
 - Node: 20
 
+## AI agent guidelines
+
+- **Never run Bun-based type checks locally** (for example `bun run check`, `bunx tsc --noEmit`, or any similar typecheck command). They are resource-heavy and are handled by GitHub Actions, so trust CI for type errors instead of validating them locally.
+
 ## Sibling project
 
 This SDK mirrors `alist-kratos-sdk/` (the AList SDK in the parent `ai-orchestration` workspace). Same shape:
