@@ -1672,7 +1672,7 @@ export interface GenerationTopics {
   workspace_id: string | null;
 }
 export interface GenerationTopicsInput {
-  id: string;
+  id?: string;
   user_id?: string;
   title?: string | null;
   cover_url?: string | null;
@@ -1685,7 +1685,7 @@ export interface GenerationTopicsInput {
 const generation_topics = {
   tableName: 'generation_topics',
   columns: ['id', 'user_id', 'title', 'cover_url', 'accessed_at', 'created_at', 'updated_at', 'type', 'workspace_id'],
-  requiredForInsert: ['id'],
+  requiredForInsert: [],
   primaryKey: 'id',
   foreignKeys: {
     user_id: { table: 'users', column: 'id', $type: null as unknown as Users },
@@ -3193,6 +3193,7 @@ export interface Sessions {
   client_id: string | null;
   accessed_at: string;
   workspace_id: string | null;
+  metadata: Json | null;
 }
 export interface SessionsInput {
   id: string;
@@ -3210,10 +3211,11 @@ export interface SessionsInput {
   client_id?: string | null;
   accessed_at?: string;
   workspace_id?: string | null;
+  metadata?: Json | null;
 }
 const sessions = {
   tableName: 'sessions',
-  columns: ['id', 'slug', 'title', 'description', 'avatar', 'background_color', 'type', 'user_id', 'group_id', 'pinned', 'created_at', 'updated_at', 'client_id', 'accessed_at', 'workspace_id'],
+  columns: ['id', 'slug', 'title', 'description', 'avatar', 'background_color', 'type', 'user_id', 'group_id', 'pinned', 'created_at', 'updated_at', 'client_id', 'accessed_at', 'workspace_id', 'metadata'],
   requiredForInsert: ['id', 'slug'],
   primaryKey: 'id',
   foreignKeys: {
@@ -3967,7 +3969,7 @@ export interface UserMemoriesInput {
   details_vector_1024?: number[] | null;
   status?: string | null;
   accessed_count?: number | null;
-  last_accessed_at: string;
+  last_accessed_at?: string;
   accessed_at?: string;
   created_at?: string;
   updated_at?: string;
@@ -3979,7 +3981,7 @@ export interface UserMemoriesInput {
 const user_memories = {
   tableName: 'user_memories',
   columns: ['id', 'user_id', 'memory_category', 'memory_layer', 'memory_type', 'title', 'summary', 'summary_vector_1024', 'details', 'details_vector_1024', 'status', 'accessed_count', 'last_accessed_at', 'accessed_at', 'created_at', 'updated_at', 'metadata', 'tags', 'captured_at', 'user_memories_tsv'],
-  requiredForInsert: ['id', 'last_accessed_at'],
+  requiredForInsert: ['id'],
   primaryKey: 'id',
   foreignKeys: { user_id: { table: 'users', column: 'id', $type: null as unknown as Users }, },
   $type: null as unknown as UserMemories,
@@ -4013,7 +4015,7 @@ export interface UserMemoriesActivities {
   user_memories_activities_tsv: string | null;
 }
 export interface UserMemoriesActivitiesInput {
-  id: string;
+  id?: string;
   user_id?: string | null;
   user_memory_id?: string | null;
   metadata?: Json | null;
@@ -4040,7 +4042,7 @@ export interface UserMemoriesActivitiesInput {
 const user_memories_activities = {
   tableName: 'user_memories_activities',
   columns: ['id', 'user_id', 'user_memory_id', 'metadata', 'tags', 'type', 'status', 'timezone', 'starts_at', 'ends_at', 'associated_objects', 'associated_subjects', 'associated_locations', 'notes', 'narrative', 'narrative_vector', 'feedback', 'feedback_vector', 'captured_at', 'accessed_at', 'created_at', 'updated_at', 'user_memories_activities_tsv'],
-  requiredForInsert: ['id', 'type'],
+  requiredForInsert: ['type'],
   primaryKey: 'id',
   foreignKeys: {
     user_id: { table: 'users', column: 'id', $type: null as unknown as Users },
@@ -4073,7 +4075,7 @@ export interface UserMemoriesContexts {
   user_memories_contexts_tsv: string | null;
 }
 export interface UserMemoriesContextsInput {
-  id: string;
+  id?: string;
   user_memory_ids?: Json | null;
   associated_objects?: Json | null;
   associated_subjects?: Json | null;
@@ -4096,7 +4098,7 @@ export interface UserMemoriesContextsInput {
 const user_memories_contexts = {
   tableName: 'user_memories_contexts',
   columns: ['id', 'user_memory_ids', 'associated_objects', 'associated_subjects', 'title', 'description', 'description_vector', 'type', 'current_status', 'score_impact', 'score_urgency', 'accessed_at', 'created_at', 'updated_at', 'user_id', 'metadata', 'tags', 'captured_at', 'user_memories_contexts_tsv'],
-  requiredForInsert: ['id'],
+  requiredForInsert: [],
   primaryKey: 'id',
   foreignKeys: { user_id: { table: 'users', column: 'id', $type: null as unknown as Users }, },
   $type: null as unknown as UserMemoriesContexts,
@@ -4127,7 +4129,7 @@ export interface UserMemoriesExperiences {
   user_memories_experiences_tsv: string | null;
 }
 export interface UserMemoriesExperiencesInput {
-  id: string;
+  id?: string;
   user_memory_id?: string | null;
   type?: string | null;
   situation?: string | null;
@@ -4151,7 +4153,7 @@ export interface UserMemoriesExperiencesInput {
 const user_memories_experiences = {
   tableName: 'user_memories_experiences',
   columns: ['id', 'user_memory_id', 'type', 'situation', 'situation_vector', 'reasoning', 'possible_outcome', 'action', 'action_vector', 'key_learning', 'key_learning_vector', 'metadata', 'score_confidence', 'accessed_at', 'created_at', 'updated_at', 'user_id', 'tags', 'captured_at', 'user_memories_experiences_tsv'],
-  requiredForInsert: ['id'],
+  requiredForInsert: [],
   primaryKey: 'id',
   foreignKeys: {
     user_memory_id: { table: 'user_memories', column: 'id', $type: null as unknown as UserMemories },
@@ -4183,7 +4185,7 @@ export interface UserMemoriesIdentities {
 export interface UserMemoriesIdentitiesInput {
   description?: string | null;
   description_vector?: number[] | null;
-  id: string;
+  id?: string;
   relationship?: string | null;
   role?: string | null;
   type?: string | null;
@@ -4201,7 +4203,7 @@ export interface UserMemoriesIdentitiesInput {
 const user_memories_identities = {
   tableName: 'user_memories_identities',
   columns: ['description', 'description_vector', 'id', 'relationship', 'role', 'type', 'user_memory_id', 'accessed_at', 'created_at', 'updated_at', 'user_id', 'metadata', 'tags', 'episodic_date', 'captured_at', 'user_memories_identities_tsv'],
-  requiredForInsert: ['id'],
+  requiredForInsert: [],
   primaryKey: 'id',
   foreignKeys: {
     user_memory_id: { table: 'user_memories', column: 'id', $type: null as unknown as UserMemories },
@@ -4230,7 +4232,7 @@ export interface UserMemoriesPreferences {
   user_memories_preferences_tsv: string | null;
 }
 export interface UserMemoriesPreferencesInput {
-  id: string;
+  id?: string;
   user_memory_id?: string | null;
   conclusion_directives?: string | null;
   conclusion_directives_vector?: number[] | null;
@@ -4249,7 +4251,7 @@ export interface UserMemoriesPreferencesInput {
 const user_memories_preferences = {
   tableName: 'user_memories_preferences',
   columns: ['id', 'user_memory_id', 'conclusion_directives', 'conclusion_directives_vector', 'type', 'suggestions', 'score_priority', 'accessed_at', 'created_at', 'updated_at', 'user_id', 'metadata', 'tags', 'captured_at', 'user_memories_preferences_tsv'],
-  requiredForInsert: ['id'],
+  requiredForInsert: [],
   primaryKey: 'id',
   foreignKeys: {
     user_memory_id: { table: 'user_memories', column: 'id', $type: null as unknown as UserMemories },
@@ -4377,6 +4379,10 @@ export interface UserSettings {
   market: Json | null;
   memory: Json | null;
   notification: Json | null;
+  interests: string[] | null;
+  preference: Json | null;
+  guide: Json | null;
+  settings: Json | null;
 }
 export interface UserSettingsInput {
   id: string;
@@ -4392,10 +4398,14 @@ export interface UserSettingsInput {
   market?: Json | null;
   memory?: Json | null;
   notification?: Json | null;
+  interests?: string[] | null;
+  preference?: Json | null;
+  guide?: Json | null;
+  settings?: Json | null;
 }
 const user_settings = {
   tableName: 'user_settings',
-  columns: ['id', 'tts', 'key_vaults', 'general', 'language_model', 'system_agent', 'default_agent', 'tool', 'hotkey', 'image', 'market', 'memory', 'notification'],
+  columns: ['id', 'tts', 'key_vaults', 'general', 'language_model', 'system_agent', 'default_agent', 'tool', 'hotkey', 'image', 'market', 'memory', 'notification', 'interests', 'preference', 'guide', 'settings'],
   requiredForInsert: ['id'],
   primaryKey: 'id',
   foreignKeys: { id: { table: 'users', column: 'id', $type: null as unknown as Users }, },
