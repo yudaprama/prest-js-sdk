@@ -123,6 +123,12 @@ export interface SelectOpts {
   or?: Filter[];
   /** Columns to return from update/delete — `_returning=col1,col2` */
   returning?: string[];
+  /**
+   * Rewrite response keys from snake_case to camelCase. Off by default so
+   * existing callers keep the Postgres-verbatim shape. Turn on at the
+   * boundary where a frontend store / serializer expects camelCase.
+   */
+  camelCase?: boolean;
 }
 
 export class PrestApiError extends Error {
@@ -135,6 +141,9 @@ export class PrestApiError extends Error {
     this.name = "PrestApiError";
   }
 }
+
+export { camelizeKey, camelizeKeys } from "./camelize.js";
+import { camelizeKeys } from "./camelize.js";
 
 // ============================================================
 // Filter serializer (the heart of the DSL)
@@ -379,6 +388,30 @@ export class PrestClient {
     return body as T;
   }
 
+  // ─── Authz check ─────────────────────────────────────────────────────────
+
+  /**
+   * `GET /authz/check` — check a workspace permission via Ory Keto.
+   *
+   * @param params.object     (required) — e.g. workspace ID
+   * @param params.relation   (required) — e.g. "view", "write", "manage"
+   * @param params.namespace  (optional, default "workspace")
+   * @param params.subject_id (optional — defaults to X-User-Id header)
+   */
+  async checkAuthz(params: {
+    object: string;
+    relation: string;
+    namespace?: string;
+    subject_id?: string;
+  }): Promise<{ allowed: boolean }> {
+    const qs = new URLSearchParams();
+    qs.set("object", params.object);
+    qs.set("relation", params.relation);
+    if (params.namespace) qs.set("namespace", params.namespace);
+    if (params.subject_id) qs.set("subject_id", params.subject_id);
+    return this.request("GET", "/authz/check", { params: qs });
+  }
+
   // ─── Catalog ─────────────────────────────────────────────────────────────
 
   /** `GET /databases` — list database names. */
@@ -445,12 +478,14 @@ export class PrestClient {
     table: string,
     opts: SelectOpts = {},
   ): Promise<T[]> {
-    const params = serializeSelectOpts(opts);
-    return this.request(
+    const { camelCase, ...rest } = opts;
+    const params = serializeSelectOpts(rest);
+    const rows = this.request<T[]>(
       "GET",
       `/${encodeURIComponent(database)}/${encodeURIComponent(schema)}/${encodeURIComponent(table)}`,
       { params },
     );
+    return camelCase ? rows.then((r) => camelizeKeys<T[]>(r)) : rows;
   }
 
   /** `POST /{db}/{schema}/{table}` — insert a single row. */
@@ -459,12 +494,14 @@ export class PrestClient {
     schema: string,
     table: string,
     data: Record<string, unknown>,
+    opts: { camelCase?: boolean } = {},
   ): Promise<T[]> {
-    return this.request(
+    const rows = this.request<T[]>(
       "POST",
       `/${encodeURIComponent(database)}/${encodeURIComponent(schema)}/${encodeURIComponent(table)}`,
       { body: JSON.stringify(data) },
     );
+    return opts.camelCase ? rows.then((r) => camelizeKeys<T[]>(r)) : rows;
   }
 
   /** `POST /batch/{db}/{schema}/{table}` — insert multiple rows in one call. */
@@ -473,12 +510,14 @@ export class PrestClient {
     schema: string,
     table: string,
     rows: Record<string, unknown>[],
+    opts: { camelCase?: boolean } = {},
   ): Promise<T[]> {
-    return this.request(
+    const result = this.request<T[]>(
       "POST",
       `/batch/${encodeURIComponent(database)}/${encodeURIComponent(schema)}/${encodeURIComponent(table)}`,
       { body: JSON.stringify(rows) },
     );
+    return opts.camelCase ? result.then((r) => camelizeKeys<T[]>(r)) : result;
   }
 
   /** `PUT /{db}/{schema}/{table}?filter` — update rows matching filter. */
@@ -488,13 +527,15 @@ export class PrestClient {
     table: string,
     where: Filter,
     data: Record<string, unknown>,
+    opts: { camelCase?: boolean } = {},
   ): Promise<T[]> {
     const params = serializeFilter(where);
-    return this.request(
+    const rows = this.request<T[]>(
       "PUT",
       `/${encodeURIComponent(database)}/${encodeURIComponent(schema)}/${encodeURIComponent(table)}`,
       { body: JSON.stringify(data), params },
     );
+    return opts.camelCase ? rows.then((r) => camelizeKeys<T[]>(r)) : rows;
   }
 
   /** `DELETE /{db}/{schema}/{table}?filter` — delete rows matching filter. */
@@ -503,13 +544,15 @@ export class PrestClient {
     schema: string,
     table: string,
     where: Filter,
+    opts: { camelCase?: boolean } = {},
   ): Promise<T[]> {
     const params = serializeFilter(where);
-    return this.request(
+    const rows = this.request<T[]>(
       "DELETE",
       `/${encodeURIComponent(database)}/${encodeURIComponent(schema)}/${encodeURIComponent(table)}`,
       { params },
     );
+    return opts.camelCase ? rows.then((r) => camelizeKeys<T[]>(r)) : rows;
   }
 
   // ─── Stored queries ──────────────────────────────────────────────────────
@@ -529,14 +572,16 @@ export class PrestClient {
     location: string,
     script: string,
     params: Record<string, string | number | boolean> = {},
+    opts: { camelCase?: boolean } = {},
   ): Promise<T[]> {
     const qs = new URLSearchParams();
     for (const [k, v] of Object.entries(params)) qs.set(k, String(v));
-    return this.request(
+    const rows = this.request<T[]>(
       "GET",
       `/_QUERIES/${encodeURIComponent(location)}/${encodeURIComponent(script)}`,
       { params: qs },
     );
+    return opts.camelCase ? rows.then((r) => camelizeKeys<T[]>(r)) : rows;
   }
 
   // ─── Health & auth ───────────────────────────────────────────────────────
@@ -623,24 +668,28 @@ export class TypedPrestClient<Tables> {
   insert<K extends keyof Tables & string>(
     table: K,
     data: InputOf<Tables[K]>,
+    opts: { camelCase?: boolean } = {},
   ): Promise<SelectOf<Tables[K]>[]> {
     return this.client.insert(
       this.database,
       this.schema,
       table,
       data as Record<string, unknown>,
+      opts,
     );
   }
 
   insertBatch<K extends keyof Tables & string>(
     table: K,
     rows: InputOf<Tables[K]>[],
+    opts: { camelCase?: boolean } = {},
   ): Promise<SelectOf<Tables[K]>[]> {
     return this.client.insertBatch(
       this.database,
       this.schema,
       table,
       rows as unknown as Record<string, unknown>[],
+      opts,
     );
   }
 
@@ -648,6 +697,7 @@ export class TypedPrestClient<Tables> {
     table: K,
     where: Filter,
     data: Partial<InputOf<Tables[K]>>,
+    opts: { camelCase?: boolean } = {},
   ): Promise<SelectOf<Tables[K]>[]> {
     return this.client.update(
       this.database,
@@ -655,14 +705,26 @@ export class TypedPrestClient<Tables> {
       table,
       where,
       data as Record<string, unknown>,
+      opts,
     );
   }
 
   delete<K extends keyof Tables & string>(
     table: K,
     where: Filter,
+    opts: { camelCase?: boolean } = {},
   ): Promise<SelectOf<Tables[K]>[]> {
-    return this.client.delete(this.database, this.schema, table, where);
+    return this.client.delete(this.database, this.schema, table, where, opts);
+  }
+
+  /** Execute a stored SQL query scoped to this client's database. */
+  query<T = unknown>(
+    location: string,
+    script: string,
+    params: Record<string, string | number | boolean> = {},
+    opts: { camelCase?: boolean } = {},
+  ): Promise<T[]> {
+    return this.client.query(location, script, params, opts);
   }
 }
 

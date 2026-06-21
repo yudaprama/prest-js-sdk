@@ -1,9 +1,19 @@
 {
   "name": "prest-js-sdk",
-  "version": "0.5.0",
+  "version": "0.7.0",
   "description": "TypeScript SDK for pREST (PostgreSQL REST API) with typed filter DSL and optional Kratos auth",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./lobehub": {
+      "types": "./dist/lobehub.d.ts",
+      "import": "./dist/lobehub.js"
+    }
+  },
   "type": "module",
   "scripts": {
     "build": "tsc",
@@ -11,10 +21,12 @@
     "prepublishOnly": "npm run build",
     "changeset": "changeset",
     "version-packages": "changeset version",
-    "release": "npm run build && changeset publish"
+    "release": "npm run build && changeset publish",
+    "gen-types": "PG_TO_TS_CONN=\"$PREST_PG_URL_LOBEHUB\" bun ../pg-to-ts/dist/cli.js generate --config pg-to-ts.json"
   },
   "devDependencies": {
     "@changesets/cli": "^2.27.10",
+    "pg-to-ts": "file:../pg-to-ts",
     "typescript": "^5.7.2"
   }
 }
