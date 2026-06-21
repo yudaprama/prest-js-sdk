@@ -4,6 +4,35 @@ export { PrestClient, TypedPrestClient } from "./index.js";
 import type { TableTypes } from "./lobehub-types.js";
 import { PrestClient, TypedPrestClient, type Filter, type SelectOpts } from "./index.js";
 
+// ─── Type-level snake→camel utilities ───────────────────────────────────
+
+/** Convert a snake_case string literal to camelCase at the type level. */
+export type CamelizeKey<S extends string> = S extends `${infer Head}_${infer Inferior}_${infer Rest}`
+  ? `${Head}${Capitalize<CamelizeKey<`${Inferior}_${Rest}`>>}`
+  : S extends `${infer Head}_${infer Tail}`
+    ? `${Head}${Capitalize<Tail>}`
+    : S;
+
+/** Map an object type's keys through CamelizeKey (values unchanged). */
+export type CamelKeys<T> = {
+  [K in keyof T as K extends string ? CamelizeKey<K> : K]: T[K];
+};
+
+/**
+ * TableMap variant where `select` shapes are camelCase (matching the SDK's
+ * default auto-camelCase runtime output) but `input` shapes stay snake_case
+ * (Postgres column names, which is what INSERT/UPDATE payloads must use).
+ *
+ * LobehubClient wraps a `TypedPrestClient<CamelTableTypes>` so callers get
+ * correctly-typed camelCase responses without unsafe casts.
+ */
+export type CamelTableTypes = {
+  [K in keyof TableTypes]: {
+    select: CamelKeys<TableTypes[K] extends { select: infer S } ? S : never>;
+    input: TableTypes[K] extends { input: infer I } ? I : never;
+  };
+};
+
 /**
  * Result row from the `agentSharesByUser` Tier 2 query.
  *
@@ -68,7 +97,7 @@ export interface RecentItemRaw {
 }
 
 /**
- * Typed LobeHub client — wraps `TypedPrestClient<TableTypes>` with
+ * Typed LobeHub client — wraps `TypedPrestClient<CamelTableTypes>` with
  * convenience methods for Tier 2 stored queries.
  *
  * Responses are camelCased by default: pREST returns snake_case columns
@@ -76,10 +105,12 @@ export interface RecentItemRaw {
  * serializers expect camelCase (`savedAt`, `documentId`). The mapping
  * runs once at this boundary so call sites don't have to.
  *
- * Pass `{ camelCase: false }` on any call to keep raw snake_case keys.
+ * Pass `{ camelCase: false }` on any call to keep raw snake_case keys
+ * (the return type is still declared as camelCase; use the `*Raw`
+ * interfaces when you need the pre-mapped shape on the type level too).
  */
 export class LobehubClient {
-  constructor(private readonly inner: TypedPrestClient<TableTypes>) {}
+  constructor(private readonly inner: TypedPrestClient<CamelTableTypes>) {}
 
   /** Typed table CRUD — mirrors `TypedPrestClient.select / insert / etc.` */
   get tables() {
@@ -118,7 +149,7 @@ export class LobehubClient {
 
   // ─── camelCase-aware CRUD shortcuts ────────────────────────────────────
 
-  select<K extends keyof TableTypes & string>(
+  select<K extends keyof CamelTableTypes & string>(
     table: K,
     opts: SelectOpts = {},
   ) {
@@ -126,35 +157,35 @@ export class LobehubClient {
     return this.inner.select(table, { ...rest, camelCase });
   }
 
-  insert<K extends keyof TableTypes & string>(
+  insert<K extends keyof CamelTableTypes & string>(
     table: K,
-    data: TableTypes[K] extends { input: infer I } ? I : never,
+    data: CamelTableTypes[K] extends { input: infer I } ? I : never,
     opts: { camelCase?: boolean } = {},
   ) {
     const { camelCase = true } = opts;
     return this.inner.insert(table, data, { camelCase });
   }
 
-  insertBatch<K extends keyof TableTypes & string>(
+  insertBatch<K extends keyof CamelTableTypes & string>(
     table: K,
-    rows: Array<TableTypes[K] extends { input: infer I } ? I : never>,
+    rows: Array<CamelTableTypes[K] extends { input: infer I } ? I : never>,
     opts: { camelCase?: boolean } = {},
   ) {
     const { camelCase = true } = opts;
     return this.inner.insertBatch(table, rows, { camelCase });
   }
 
-  update<K extends keyof TableTypes & string>(
+  update<K extends keyof CamelTableTypes & string>(
     table: K,
     where: Filter,
-    data: Partial<TableTypes[K] extends { input: infer I } ? I : never>,
+    data: Partial<CamelTableTypes[K] extends { input: infer I } ? I : never>,
     opts: { camelCase?: boolean } = {},
   ) {
     const { camelCase = true } = opts;
     return this.inner.update(table, where, data, { camelCase });
   }
 
-  delete<K extends keyof TableTypes & string>(
+  delete<K extends keyof CamelTableTypes & string>(
     table: K,
     where: Filter,
     opts: { camelCase?: boolean } = {},
@@ -175,6 +206,6 @@ export class LobehubClient {
 }
 
 export function lobehubClient(client: PrestClient) {
-  const inner = client.forSchema<TableTypes>("lobehub", "public");
+  const inner = client.forSchema<CamelTableTypes>("lobehub", "public");
   return new LobehubClient(inner);
 }
