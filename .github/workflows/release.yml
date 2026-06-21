@@ -21,19 +21,25 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          registry-url: 'https://registry.npmjs.org'
 
       - name: Install dependencies
-        run: npm ci
+        run: bun install --no-save
 
       - name: Create Release Pull Request or Publish to npm
         uses: changesets/action@v1
         with:
-          publish: npm run release
-          version: npm run version-packages
+          publish: bun run release
+          version: bun run version-packages
           commit: "chore(release): version packages"
           title: "chore(release): version packages"
           setupGitUser: true
