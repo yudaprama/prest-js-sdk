@@ -22,11 +22,10 @@
     "changeset": "changeset",
     "version-packages": "changeset version",
     "release": "npm run build && changeset publish",
-    "gen-types": "PG_TO_TS_CONN=\"$PREST_PG_URL_LOBEHUB\" bun ../pg-to-ts/dist/cli.js generate --config pg-to-ts.json"
+    "gen-types": "PG_TO_TS_CONN=\"$PREST_PG_URL_LOBEHUB\" bunx pg-to-ts@4.1.1 generate --config pg-to-ts.json"
   },
   "devDependencies": {
     "@changesets/cli": "^2.27.10",
-    "pg-to-ts": "file:../pg-to-ts",
     "typescript": "^5.7.2"
   }
 }
