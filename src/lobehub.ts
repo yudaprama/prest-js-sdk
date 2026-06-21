@@ -6,8 +6,23 @@ import { PrestClient, TypedPrestClient, type Filter, type SelectOpts } from "./i
 
 /**
  * Result row from the `agentSharesByUser` Tier 2 query.
+ *
+ * LobehubClient.agentSharesByUser returns these with camelCase keys by
+ * default (SDK 0.7.0+). Use AgentShareRowRaw when opting out.
  */
 export interface AgentShareRow {
+  id: string;
+  agentId: string;
+  visibility: string;
+  shareConfig: Record<string, unknown> | null;
+  userViewCount: number;
+  createdAt: string;
+  updatedAt: string;
+  agentTitle: string;
+  agentSlug: string;
+}
+
+export interface AgentShareRowRaw {
   id: string;
   agent_id: string;
   visibility: string;
@@ -21,8 +36,27 @@ export interface AgentShareRow {
 
 /**
  * A unified recent item — union of `topic`, `document`, and `task` arms.
+ *
+ * LobehubClient.recentByUser returns these with camelCase keys by default
+ * (SDK 0.7.0+), so the type reflects the post-mapping shape.
  */
 export interface RecentItem {
+  id: string;
+  metadata: Record<string, unknown> | null;
+  routeGroupId: string | null;
+  routeId: string | null;
+  status: string | null;
+  title: string;
+  type: "topic" | "document" | "task";
+  updatedAt: string;
+}
+
+/**
+ * Raw (snake_case) shape — what pREST returns before LobehubClient's
+ * auto-camelCase mapping. Useful when callers pass `camelCase: false`
+ * to recentByUser.
+ */
+export interface RecentItemRaw {
   id: string;
   metadata: Record<string, unknown> | null;
   route_group_id: string | null;
