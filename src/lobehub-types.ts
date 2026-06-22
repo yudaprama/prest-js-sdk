@@ -80,7 +80,7 @@ export interface AgentCronJobs {
   workspace_id: string | null;
 }
 export interface AgentCronJobsInput {
-  id: string;
+  id?: string;
   agent_id: string;
   group_id?: string | null;
   user_id?: string;
@@ -104,7 +104,7 @@ export interface AgentCronJobsInput {
 const agent_cron_jobs = {
   tableName: 'agent_cron_jobs',
   columns: ['id', 'agent_id', 'group_id', 'user_id', 'name', 'description', 'enabled', 'cron_pattern', 'timezone', 'content', 'edit_data', 'max_executions', 'remaining_executions', 'execution_conditions', 'last_executed_at', 'total_executions', 'accessed_at', 'created_at', 'updated_at', 'workspace_id'],
-  requiredForInsert: ['id', 'agent_id', 'cron_pattern', 'content'],
+  requiredForInsert: ['agent_id', 'cron_pattern', 'content'],
   primaryKey: 'id',
   foreignKeys: {
     agent_id: { table: 'agents', column: 'id', $type: null as unknown as Agents },
@@ -195,7 +195,7 @@ export interface AgentEvalBenchmarks {
   workspace_id: string | null;
 }
 export interface AgentEvalBenchmarksInput {
-  id: string;
+  id?: string;
   identifier: string;
   name: string;
   description?: string | null;
@@ -212,7 +212,7 @@ export interface AgentEvalBenchmarksInput {
 const agent_eval_benchmarks = {
   tableName: 'agent_eval_benchmarks',
   columns: ['id', 'identifier', 'name', 'description', 'rubrics', 'reference_url', 'metadata', 'is_system', 'accessed_at', 'created_at', 'updated_at', 'user_id', 'workspace_id'],
-  requiredForInsert: ['id', 'identifier', 'name', 'rubrics'],
+  requiredForInsert: ['identifier', 'name', 'rubrics'],
   primaryKey: 'id',
   foreignKeys: {
     user_id: { table: 'users', column: 'id', $type: null as unknown as Users },
@@ -240,7 +240,7 @@ export interface AgentEvalDatasets {
   workspace_id: string | null;
 }
 export interface AgentEvalDatasetsInput {
-  id: string;
+  id?: string;
   benchmark_id: string;
   identifier: string;
   user_id?: string | null;
@@ -258,7 +258,7 @@ export interface AgentEvalDatasetsInput {
 const agent_eval_datasets = {
   tableName: 'agent_eval_datasets',
   columns: ['id', 'benchmark_id', 'identifier', 'user_id', 'name', 'description', 'eval_mode', 'eval_config', 'metadata', 'accessed_at', 'created_at', 'updated_at', 'source_experiment_id', 'workspace_id'],
-  requiredForInsert: ['id', 'benchmark_id', 'identifier', 'name'],
+  requiredForInsert: ['benchmark_id', 'identifier', 'name'],
   primaryKey: 'id',
   foreignKeys: {
     benchmark_id: { table: 'agent_eval_benchmarks', column: 'id', $type: null as unknown as AgentEvalBenchmarks },
@@ -279,7 +279,7 @@ export interface AgentEvalExperimentBenchmarks {
   workspace_id: string | null;
 }
 export interface AgentEvalExperimentBenchmarksInput {
-  experiment_id: string;
+  experiment_id?: string;
   benchmark_id: string;
   user_id?: string;
   created_at?: string;
@@ -288,7 +288,7 @@ export interface AgentEvalExperimentBenchmarksInput {
 const agent_eval_experiment_benchmarks = {
   tableName: 'agent_eval_experiment_benchmarks',
   columns: ['experiment_id', 'benchmark_id', 'user_id', 'created_at', 'workspace_id'],
-  requiredForInsert: ['experiment_id', 'benchmark_id'],
+  requiredForInsert: ['benchmark_id'],
   primaryKey: 'experiment_id',
   foreignKeys: {
     experiment_id: { table: 'agent_eval_experiments', column: 'id', $type: null as unknown as AgentEvalExperiments },
@@ -313,7 +313,7 @@ export interface AgentEvalExperiments {
   workspace_id: string | null;
 }
 export interface AgentEvalExperimentsInput {
-  id: string;
+  id?: string;
   user_id?: string;
   name: string;
   description?: string | null;
@@ -326,7 +326,7 @@ export interface AgentEvalExperimentsInput {
 const agent_eval_experiments = {
   tableName: 'agent_eval_experiments',
   columns: ['id', 'user_id', 'name', 'description', 'metadata', 'accessed_at', 'created_at', 'updated_at', 'workspace_id'],
-  requiredForInsert: ['id', 'name'],
+  requiredForInsert: ['name'],
   primaryKey: 'id',
   foreignKeys: {
     user_id: { table: 'users', column: 'id', $type: null as unknown as Users },
@@ -351,7 +351,7 @@ export interface AgentEvalRunTopics {
 }
 export interface AgentEvalRunTopicsInput {
   user_id?: string;
-  run_id: string;
+  run_id?: string;
   topic_id: string;
   test_case_id: string;
   status?: string | null;
@@ -364,7 +364,7 @@ export interface AgentEvalRunTopicsInput {
 const agent_eval_run_topics = {
   tableName: 'agent_eval_run_topics',
   columns: ['user_id', 'run_id', 'topic_id', 'test_case_id', 'status', 'score', 'passed', 'eval_result', 'created_at', 'workspace_id'],
-  requiredForInsert: ['run_id', 'topic_id', 'test_case_id'],
+  requiredForInsert: ['topic_id', 'test_case_id'],
   primaryKey: 'run_id',
   foreignKeys: {
     user_id: { table: 'users', column: 'id', $type: null as unknown as Users },
@@ -396,7 +396,7 @@ export interface AgentEvalRuns {
   workspace_id: string | null;
 }
 export interface AgentEvalRunsInput {
-  id: string;
+  id?: string;
   dataset_id: string;
   target_agent_id?: string | null;
   user_id?: string;
@@ -415,7 +415,7 @@ export interface AgentEvalRunsInput {
 const agent_eval_runs = {
   tableName: 'agent_eval_runs',
   columns: ['id', 'dataset_id', 'target_agent_id', 'user_id', 'name', 'status', 'config', 'metrics', 'started_at', 'accessed_at', 'created_at', 'updated_at', 'experiment_id', 'parent_run_id', 'workspace_id'],
-  requiredForInsert: ['id', 'dataset_id'],
+  requiredForInsert: ['dataset_id'],
   primaryKey: 'id',
   foreignKeys: {
     dataset_id: { table: 'agent_eval_datasets', column: 'id', $type: null as unknown as AgentEvalDatasets },
@@ -445,7 +445,7 @@ export interface AgentEvalTestCases {
   workspace_id: string | null;
 }
 export interface AgentEvalTestCasesInput {
-  id: string;
+  id?: string;
   user_id?: string;
   dataset_id: string;
   content: Json;
@@ -461,7 +461,7 @@ export interface AgentEvalTestCasesInput {
 const agent_eval_test_cases = {
   tableName: 'agent_eval_test_cases',
   columns: ['id', 'user_id', 'dataset_id', 'content', 'eval_mode', 'eval_config', 'metadata', 'sort_order', 'accessed_at', 'created_at', 'updated_at', 'workspace_id'],
-  requiredForInsert: ['id', 'dataset_id', 'content'],
+  requiredForInsert: ['dataset_id', 'content'],
   primaryKey: 'id',
   foreignKeys: {
     user_id: { table: 'users', column: 'id', $type: null as unknown as Users },
@@ -520,7 +520,7 @@ export interface AgentOperations {
   verify_plan_confirmed_at: string | null;
 }
 export interface AgentOperationsInput {
-  id: string;
+  id?: string;
   user_id?: string;
   agent_id?: string | null;
   topic_id?: string | null;
@@ -568,7 +568,7 @@ export interface AgentOperationsInput {
 const agent_operations = {
   tableName: 'agent_operations',
   columns: ['id', 'user_id', 'agent_id', 'topic_id', 'thread_id', 'task_id', 'chat_group_id', 'parent_operation_id', 'status', 'completion_reason', 'started_at', 'completed_at', 'step_count', 'max_steps', 'force_finish', 'interruption', 'error', 'total_cost', 'currency', 'total_input_tokens', 'total_output_tokens', 'total_tokens', 'llm_calls', 'tool_calls', 'human_interventions', 'processing_time_ms', 'human_waiting_time_ms', 'cost', 'usage', 'cost_limit', 'model', 'provider', 'model_runtime_config', 'trigger', 'app_context', 'trace_s3_key', 'metadata', 'accessed_at', 'created_at', 'updated_at', 'workspace_id', 'verify_status', 'verify_plan', 'verify_plan_confirmed_at'],
-  requiredForInsert: ['id', 'status'],
+  requiredForInsert: ['status'],
   primaryKey: 'id',
   foreignKeys: {
     agent_id: { table: 'agents', column: 'id', $type: null as unknown as Agents },
@@ -632,7 +632,7 @@ export interface AgentSkills {
   workspace_id: string | null;
 }
 export interface AgentSkillsInput {
-  id: string;
+  id?: string;
   name: string;
   description: string;
   identifier: string;
@@ -651,7 +651,7 @@ export interface AgentSkillsInput {
 const agent_skills = {
   tableName: 'agent_skills',
   columns: ['id', 'name', 'description', 'identifier', 'source', 'manifest', 'content', 'editor_data', 'resources', 'zip_file_hash', 'user_id', 'accessed_at', 'created_at', 'updated_at', 'workspace_id'],
-  requiredForInsert: ['id', 'name', 'description', 'identifier', 'source'],
+  requiredForInsert: ['name', 'description', 'identifier', 'source'],
   primaryKey: 'id',
   foreignKeys: {
     zip_file_hash: { table: 'global_files', column: 'hash_id', $type: null as unknown as GlobalFiles },
@@ -696,7 +696,7 @@ export interface Agents {
   agents_tsv: string | null;
 }
 export interface AgentsInput {
-  id: string;
+  id?: string;
   slug?: string | null;
   title?: string | null;
   description?: string | null;
@@ -730,7 +730,7 @@ export interface AgentsInput {
 const agents = {
   tableName: 'agents',
   columns: ['id', 'slug', 'title', 'description', 'tags', 'avatar', 'background_color', 'plugins', 'user_id', 'chat_config', 'few_shots', 'model', 'params', 'provider', 'system_role', 'tts', 'created_at', 'updated_at', 'accessed_at', 'client_id', 'opening_message', 'opening_questions', 'virtual', 'market_identifier', 'editor_data', 'pinned', 'session_group_id', 'agency_config', 'workspace_id', 'agents_tsv'],
-  requiredForInsert: ['id'],
+  requiredForInsert: [],
   primaryKey: 'id',
   foreignKeys: {
     user_id: { table: 'users', column: 'id', $type: null as unknown as Users },
@@ -753,7 +753,7 @@ export interface AgentsFiles {
   workspace_id: string | null;
 }
 export interface AgentsFilesInput {
-  file_id: string;
+  file_id?: string;
   agent_id: string;
   enabled?: boolean | null;
   user_id?: string;
@@ -765,7 +765,7 @@ export interface AgentsFilesInput {
 const agents_files = {
   tableName: 'agents_files',
   columns: ['file_id', 'agent_id', 'enabled', 'user_id', 'created_at', 'updated_at', 'accessed_at', 'workspace_id'],
-  requiredForInsert: ['file_id', 'agent_id'],
+  requiredForInsert: ['agent_id'],
   primaryKey: 'file_id',
   foreignKeys: {
     file_id: { table: 'files', column: 'id', $type: null as unknown as Files },
@@ -789,7 +789,7 @@ export interface AgentsKnowledgeBases {
   workspace_id: string | null;
 }
 export interface AgentsKnowledgeBasesInput {
-  agent_id: string;
+  agent_id?: string;
   knowledge_base_id: string;
   user_id?: string;
   enabled?: boolean | null;
@@ -801,7 +801,7 @@ export interface AgentsKnowledgeBasesInput {
 const agents_knowledge_bases = {
   tableName: 'agents_knowledge_bases',
   columns: ['agent_id', 'knowledge_base_id', 'user_id', 'enabled', 'created_at', 'updated_at', 'accessed_at', 'workspace_id'],
-  requiredForInsert: ['agent_id', 'knowledge_base_id'],
+  requiredForInsert: ['knowledge_base_id'],
   primaryKey: 'agent_id',
   foreignKeys: {
     agent_id: { table: 'agents', column: 'id', $type: null as unknown as Agents },
@@ -821,7 +821,7 @@ export interface AgentsToSessions {
   workspace_id: string | null;
 }
 export interface AgentsToSessionsInput {
-  agent_id: string;
+  agent_id?: string;
   session_id: string;
   user_id?: string;
   workspace_id?: string | null;
@@ -829,7 +829,7 @@ export interface AgentsToSessionsInput {
 const agents_to_sessions = {
   tableName: 'agents_to_sessions',
   columns: ['agent_id', 'session_id', 'user_id', 'workspace_id'],
-  requiredForInsert: ['agent_id', 'session_id'],
+  requiredForInsert: ['session_id'],
   primaryKey: 'agent_id',
   foreignKeys: {
     agent_id: { table: 'agents', column: 'id', $type: null as unknown as Agents },
@@ -867,7 +867,7 @@ export interface AiModels {
   _id: string | null;
 }
 export interface AiModelsInput {
-  id: string;
+  id?: string;
   display_name?: string | null;
   description?: string | null;
   organization?: string | null;
@@ -893,7 +893,7 @@ export interface AiModelsInput {
 const ai_models = {
   tableName: 'ai_models',
   columns: ['id', 'display_name', 'description', 'organization', 'enabled', 'provider_id', 'type', 'sort', 'user_id', 'pricing', 'parameters', 'config', 'abilities', 'context_window_tokens', 'source', 'released_at', 'accessed_at', 'created_at', 'updated_at', 'settings', 'workspace_id', '_id'],
-  requiredForInsert: ['id', 'provider_id'],
+  requiredForInsert: ['provider_id'],
   primaryKey: 'id',
   foreignKeys: {
     user_id: { table: 'users', column: 'id', $type: null as unknown as Users },
@@ -925,7 +925,7 @@ export interface AiProviders {
   _id: string | null;
 }
 export interface AiProvidersInput {
-  id: string;
+  id?: string;
   name?: string | null;
   user_id?: string;
   sort?: number | null;
@@ -947,7 +947,7 @@ export interface AiProvidersInput {
 const ai_providers = {
   tableName: 'ai_providers',
   columns: ['id', 'name', 'user_id', 'sort', 'enabled', 'fetch_on_client', 'check_model', 'logo', 'description', 'key_vaults', 'source', 'settings', 'accessed_at', 'created_at', 'updated_at', 'config', 'workspace_id', '_id'],
-  requiredForInsert: ['id'],
+  requiredForInsert: [],
   primaryKey: 'id',
   foreignKeys: {
     user_id: { table: 'users', column: 'id', $type: null as unknown as Users },
@@ -982,14 +982,14 @@ export interface ApiKeysInput {
   accessed_at?: string;
   created_at?: string;
   updated_at?: string;
-  id: string;
+  id?: string;
   key_hash?: string | null;
   workspace_id?: string | null;
 }
 const api_keys = {
   tableName: 'api_keys',
   columns: ['name', 'key', 'enabled', 'expires_at', 'last_used_at', 'user_id', 'accessed_at', 'created_at', 'updated_at', 'id', 'key_hash', 'workspace_id'],
-  requiredForInsert: ['name', 'key', 'id'],
+  requiredForInsert: ['name', 'key'],
   primaryKey: 'id',
   foreignKeys: {
     user_id: { table: 'users', column: 'id', $type: null as unknown as Users },
@@ -1067,7 +1067,7 @@ export interface Briefs {
   workspace_id: string | null;
 }
 export interface BriefsInput {
-  id: string;
+  id?: string;
   user_id?: string;
   task_id?: string | null;
   cron_job_id?: string | null;
@@ -1091,7 +1091,7 @@ export interface BriefsInput {
 const briefs = {
   tableName: 'briefs',
   columns: ['id', 'user_id', 'task_id', 'cron_job_id', 'topic_id', 'agent_id', 'type', 'priority', 'title', 'summary', 'artifacts', 'actions', 'resolved_action', 'resolved_comment', 'read_at', 'resolved_at', 'created_at', 'trigger', 'metadata', 'workspace_id'],
-  requiredForInsert: ['id', 'type', 'title', 'summary'],
+  requiredForInsert: ['type', 'title', 'summary'],
   primaryKey: 'id',
   foreignKeys: {
     user_id: { table: 'users', column: 'id', $type: null as unknown as Users },
@@ -1125,7 +1125,7 @@ export interface ChatGroups {
   chat_groups_tsv: string | null;
 }
 export interface ChatGroupsInput {
-  id: string;
+  id?: string;
   title?: string | null;
   description?: string | null;
   config?: Json | null;
@@ -1147,7 +1147,7 @@ export interface ChatGroupsInput {
 const chat_groups = {
   tableName: 'chat_groups',
   columns: ['id', 'title', 'description', 'config', 'client_id', 'user_id', 'pinned', 'accessed_at', 'created_at', 'updated_at', 'group_id', 'avatar', 'background_color', 'content', 'editor_data', 'market_identifier', 'workspace_id', 'chat_groups_tsv'],
-  requiredForInsert: ['id'],
+  requiredForInsert: [],
   primaryKey: 'id',
   foreignKeys: {
     user_id: { table: 'users', column: 'id', $type: null as unknown as Users },
@@ -1172,7 +1172,7 @@ export interface ChatGroupsAgents {
   workspace_id: string | null;
 }
 export interface ChatGroupsAgentsInput {
-  chat_group_id: string;
+  chat_group_id?: string;
   agent_id: string;
   user_id?: string;
   enabled?: boolean | null;
@@ -1186,7 +1186,7 @@ export interface ChatGroupsAgentsInput {
 const chat_groups_agents = {
   tableName: 'chat_groups_agents',
   columns: ['chat_group_id', 'agent_id', 'user_id', 'enabled', 'order', 'role', 'accessed_at', 'created_at', 'updated_at', 'workspace_id'],
-  requiredForInsert: ['chat_group_id', 'agent_id'],
+  requiredForInsert: ['agent_id'],
   primaryKey: 'chat_group_id',
   foreignKeys: {
     chat_group_id: { table: 'chat_groups', column: 'id', $type: null as unknown as ChatGroups },
@@ -1300,7 +1300,7 @@ export interface DocumentChunks {
   workspace_id: string | null;
 }
 export interface DocumentChunksInput {
-  document_id: string;
+  document_id?: string;
   chunk_id: string;
   page_index?: number | null;
   user_id?: string;
@@ -1310,7 +1310,7 @@ export interface DocumentChunksInput {
 const document_chunks = {
   tableName: 'document_chunks',
   columns: ['document_id', 'chunk_id', 'page_index', 'user_id', 'created_at', 'workspace_id'],
-  requiredForInsert: ['document_id', 'chunk_id'],
+  requiredForInsert: ['chunk_id'],
   primaryKey: 'document_id',
   foreignKeys: {
     document_id: { table: 'documents', column: 'id', $type: null as unknown as Documents },
@@ -1333,7 +1333,7 @@ export interface DocumentHistories {
   workspace_id: string | null;
 }
 export interface DocumentHistoriesInput {
-  id: string;
+  id?: string;
   document_id: string;
   user_id?: string;
   editor_data: Json;
@@ -1344,7 +1344,7 @@ export interface DocumentHistoriesInput {
 const document_histories = {
   tableName: 'document_histories',
   columns: ['id', 'document_id', 'user_id', 'editor_data', 'save_source', 'saved_at', 'workspace_id'],
-  requiredForInsert: ['id', 'document_id', 'editor_data', 'save_source', 'saved_at'],
+  requiredForInsert: ['document_id', 'editor_data', 'save_source', 'saved_at'],
   primaryKey: 'id',
   foreignKeys: {
     document_id: { table: 'documents', column: 'id', $type: null as unknown as Documents },
@@ -1422,7 +1422,7 @@ export interface Documents {
   documents_tsv: string | null;
 }
 export interface DocumentsInput {
-  id: string;
+  id?: string;
   title?: string | null;
   content?: string | null;
   file_type: string;
@@ -1450,7 +1450,7 @@ export interface DocumentsInput {
 const documents = {
   tableName: 'documents',
   columns: ['id', 'title', 'content', 'file_type', 'filename', 'total_char_count', 'total_line_count', 'metadata', 'pages', 'source_type', 'source', 'file_id', 'user_id', 'client_id', 'accessed_at', 'created_at', 'updated_at', 'editor_data', 'parent_id', 'slug', 'description', 'knowledge_base_id', 'workspace_id', 'documents_tsv'],
-  requiredForInsert: ['id', 'file_type', 'total_char_count', 'total_line_count', 'source_type', 'source'],
+  requiredForInsert: ['file_type', 'total_char_count', 'total_line_count', 'source_type', 'source'],
   primaryKey: 'id',
   foreignKeys: {
     file_id: { table: 'files', column: 'id', $type: null as unknown as Files },
@@ -1505,7 +1505,7 @@ export interface FileChunks {
   workspace_id: string | null;
 }
 export interface FileChunksInput {
-  file_id: string;
+  file_id?: string;
   chunk_id: string;
   created_at?: string;
   user_id?: string;
@@ -1514,7 +1514,7 @@ export interface FileChunksInput {
 const file_chunks = {
   tableName: 'file_chunks',
   columns: ['file_id', 'chunk_id', 'created_at', 'user_id', 'workspace_id'],
-  requiredForInsert: ['file_id', 'chunk_id'],
+  requiredForInsert: ['chunk_id'],
   primaryKey: 'file_id',
   foreignKeys: {
     file_id: { table: 'files', column: 'id', $type: null as unknown as Files },
@@ -1548,7 +1548,7 @@ export interface Files {
   files_tsv: string | null;
 }
 export interface FilesInput {
-  id: string;
+  id?: string;
   user_id?: string;
   file_type: string;
   name: string;
@@ -1570,7 +1570,7 @@ export interface FilesInput {
 const files = {
   tableName: 'files',
   columns: ['id', 'user_id', 'file_type', 'name', 'size', 'url', 'metadata', 'created_at', 'updated_at', 'file_hash', 'chunk_task_id', 'embedding_task_id', 'accessed_at', 'client_id', 'source', 'parent_id', 'workspace_id', 'files_tsv'],
-  requiredForInsert: ['id', 'file_type', 'name', 'size', 'url'],
+  requiredForInsert: ['file_type', 'name', 'size', 'url'],
   primaryKey: 'id',
   foreignKeys: {
     user_id: { table: 'users', column: 'id', $type: null as unknown as Users },
@@ -1592,7 +1592,7 @@ export interface FilesToSessions {
   workspace_id: string | null;
 }
 export interface FilesToSessionsInput {
-  file_id: string;
+  file_id?: string;
   session_id: string;
   user_id?: string;
   workspace_id?: string | null;
@@ -1600,7 +1600,7 @@ export interface FilesToSessionsInput {
 const files_to_sessions = {
   tableName: 'files_to_sessions',
   columns: ['file_id', 'session_id', 'user_id', 'workspace_id'],
-  requiredForInsert: ['file_id', 'session_id'],
+  requiredForInsert: ['session_id'],
   primaryKey: 'file_id',
   foreignKeys: {
     file_id: { table: 'files', column: 'id', $type: null as unknown as Files },
@@ -1630,7 +1630,7 @@ export interface GenerationBatches {
   workspace_id: string | null;
 }
 export interface GenerationBatchesInput {
-  id: string;
+  id?: string;
   user_id?: string;
   generation_topic_id: string;
   provider: string;
@@ -1648,7 +1648,7 @@ export interface GenerationBatchesInput {
 const generation_batches = {
   tableName: 'generation_batches',
   columns: ['id', 'user_id', 'generation_topic_id', 'provider', 'model', 'prompt', 'width', 'height', 'ratio', 'config', 'accessed_at', 'created_at', 'updated_at', 'workspace_id'],
-  requiredForInsert: ['id', 'generation_topic_id', 'provider', 'model', 'prompt'],
+  requiredForInsert: ['generation_topic_id', 'provider', 'model', 'prompt'],
   primaryKey: 'id',
   foreignKeys: {
     user_id: { table: 'users', column: 'id', $type: null as unknown as Users },
@@ -1710,7 +1710,7 @@ export interface Generations {
   workspace_id: string | null;
 }
 export interface GenerationsInput {
-  id: string;
+  id?: string;
   user_id?: string;
   generation_batch_id: string;
   async_task_id?: string | null;
@@ -1725,7 +1725,7 @@ export interface GenerationsInput {
 const generations = {
   tableName: 'generations',
   columns: ['id', 'user_id', 'generation_batch_id', 'async_task_id', 'file_id', 'seed', 'asset', 'accessed_at', 'created_at', 'updated_at', 'workspace_id'],
-  requiredForInsert: ['id', 'generation_batch_id'],
+  requiredForInsert: ['generation_batch_id'],
   primaryKey: 'id',
   foreignKeys: {
     user_id: { table: 'users', column: 'id', $type: null as unknown as Users },
@@ -1750,7 +1750,7 @@ export interface GlobalFiles {
   creator: string | null;
 }
 export interface GlobalFilesInput {
-  hash_id: string;
+  hash_id?: string;
   file_type: string;
   size: number;
   url: string;
@@ -1762,7 +1762,7 @@ export interface GlobalFilesInput {
 const global_files = {
   tableName: 'global_files',
   columns: ['hash_id', 'file_type', 'size', 'url', 'metadata', 'created_at', 'accessed_at', 'creator'],
-  requiredForInsert: ['hash_id', 'file_type', 'size', 'url'],
+  requiredForInsert: ['file_type', 'size', 'url'],
   primaryKey: 'hash_id',
   foreignKeys: { creator: { table: 'users', column: 'id', $type: null as unknown as Users }, },
   $type: null as unknown as GlobalFiles,
@@ -1778,7 +1778,7 @@ export interface KnowledgeBaseFiles {
   workspace_id: string | null;
 }
 export interface KnowledgeBaseFilesInput {
-  knowledge_base_id: string;
+  knowledge_base_id?: string;
   file_id: string;
   created_at?: string;
   user_id?: string;
@@ -1787,7 +1787,7 @@ export interface KnowledgeBaseFilesInput {
 const knowledge_base_files = {
   tableName: 'knowledge_base_files',
   columns: ['knowledge_base_id', 'file_id', 'created_at', 'user_id', 'workspace_id'],
-  requiredForInsert: ['knowledge_base_id', 'file_id'],
+  requiredForInsert: ['file_id'],
   primaryKey: 'knowledge_base_id',
   foreignKeys: {
     knowledge_base_id: { table: 'knowledge_bases', column: 'id', $type: null as unknown as KnowledgeBases },
@@ -1817,7 +1817,7 @@ export interface KnowledgeBases {
   knowledge_bases_tsv: string | null;
 }
 export interface KnowledgeBasesInput {
-  id: string;
+  id?: string;
   name: string;
   description?: string | null;
   avatar?: string | null;
@@ -1835,7 +1835,7 @@ export interface KnowledgeBasesInput {
 const knowledge_bases = {
   tableName: 'knowledge_bases',
   columns: ['id', 'name', 'description', 'avatar', 'type', 'user_id', 'is_public', 'settings', 'created_at', 'updated_at', 'accessed_at', 'client_id', 'workspace_id', 'knowledge_bases_tsv'],
-  requiredForInsert: ['id', 'name'],
+  requiredForInsert: ['name'],
   primaryKey: 'id',
   foreignKeys: {
     user_id: { table: 'users', column: 'id', $type: null as unknown as Users },
@@ -1935,14 +1935,14 @@ export interface MessageChunks {
 }
 export interface MessageChunksInput {
   message_id: string;
-  chunk_id: string;
+  chunk_id?: string;
   user_id?: string;
   workspace_id?: string | null;
 }
 const message_chunks = {
   tableName: 'message_chunks',
   columns: ['message_id', 'chunk_id', 'user_id', 'workspace_id'],
-  requiredForInsert: ['message_id', 'chunk_id'],
+  requiredForInsert: ['message_id'],
   primaryKey: 'chunk_id',
   foreignKeys: {
     message_id: { table: 'messages', column: 'id', $type: null as unknown as Messages },
@@ -1974,7 +1974,7 @@ export interface MessageGroups {
   workspace_id: string | null;
 }
 export interface MessageGroupsInput {
-  id: string;
+  id?: string;
   topic_id?: string | null;
   user_id?: string;
   parent_group_id?: string | null;
@@ -1994,7 +1994,7 @@ export interface MessageGroupsInput {
 const message_groups = {
   tableName: 'message_groups',
   columns: ['id', 'topic_id', 'user_id', 'parent_group_id', 'parent_message_id', 'title', 'description', 'client_id', 'accessed_at', 'created_at', 'updated_at', 'type', 'content', 'editor_data', 'metadata', 'workspace_id'],
-  requiredForInsert: ['id'],
+  requiredForInsert: [],
   primaryKey: 'id',
   foreignKeys: {
     topic_id: { table: 'topics', column: 'id', $type: null as unknown as Topics },
@@ -2023,7 +2023,7 @@ export interface MessagePlugins {
   workspace_id: string | null;
 }
 export interface MessagePluginsInput {
-  id: string;
+  id?: string;
   tool_call_id?: string | null;
   type?: string | null;
   api_name?: string | null;
@@ -2039,7 +2039,7 @@ export interface MessagePluginsInput {
 const message_plugins = {
   tableName: 'message_plugins',
   columns: ['id', 'tool_call_id', 'type', 'api_name', 'arguments', 'identifier', 'state', 'error', 'user_id', 'client_id', 'intervention', 'workspace_id'],
-  requiredForInsert: ['id'],
+  requiredForInsert: [],
   primaryKey: 'id',
   foreignKeys: {
     id: { table: 'messages', column: 'id', $type: null as unknown as Messages },
@@ -2098,7 +2098,7 @@ export interface MessageQueryChunks {
 export interface MessageQueryChunksInput {
   id: string;
   query_id: string;
-  chunk_id: string;
+  chunk_id?: string;
   similarity?: number | null;
   user_id?: string;
   workspace_id?: string | null;
@@ -2106,7 +2106,7 @@ export interface MessageQueryChunksInput {
 const message_query_chunks = {
   tableName: 'message_query_chunks',
   columns: ['id', 'query_id', 'chunk_id', 'similarity', 'user_id', 'workspace_id'],
-  requiredForInsert: ['id', 'query_id', 'chunk_id'],
+  requiredForInsert: ['id', 'query_id'],
   primaryKey: 'chunk_id',
   foreignKeys: {
     id: { table: 'messages', column: 'id', $type: null as unknown as Messages },
@@ -2130,7 +2130,7 @@ export interface MessageTranslates {
   workspace_id: string | null;
 }
 export interface MessageTranslatesInput {
-  id: string;
+  id?: string;
   content?: string | null;
   from?: string | null;
   to?: string | null;
@@ -2141,7 +2141,7 @@ export interface MessageTranslatesInput {
 const message_translates = {
   tableName: 'message_translates',
   columns: ['id', 'content', 'from', 'to', 'user_id', 'client_id', 'workspace_id'],
-  requiredForInsert: ['id'],
+  requiredForInsert: [],
   primaryKey: 'id',
   foreignKeys: {
     id: { table: 'messages', column: 'id', $type: null as unknown as Messages },
@@ -2163,7 +2163,7 @@ export interface MessageTts {
   workspace_id: string | null;
 }
 export interface MessageTtsInput {
-  id: string;
+  id?: string;
   content_md5?: string | null;
   file_id?: string | null;
   voice?: string | null;
@@ -2174,7 +2174,7 @@ export interface MessageTtsInput {
 const message_tts = {
   tableName: 'message_tts',
   columns: ['id', 'content_md5', 'file_id', 'voice', 'user_id', 'client_id', 'workspace_id'],
-  requiredForInsert: ['id'],
+  requiredForInsert: [],
   primaryKey: 'id',
   foreignKeys: {
     id: { table: 'messages', column: 'id', $type: null as unknown as Messages },
@@ -2222,7 +2222,7 @@ export interface Messages {
   messages_tsv: string | null;
 }
 export interface MessagesInput {
-  id: string;
+  id?: string;
   role: string;
   content?: string | null;
   model?: string | null;
@@ -2258,7 +2258,7 @@ export interface MessagesInput {
 const messages = {
   tableName: 'messages',
   columns: ['id', 'role', 'content', 'model', 'provider', 'favorite', 'error', 'tools', 'trace_id', 'observation_id', 'user_id', 'session_id', 'topic_id', 'parent_id', 'quota_id', 'agent_id', 'created_at', 'updated_at', 'client_id', 'accessed_at', 'thread_id', 'reasoning', 'search', 'metadata', 'group_id', 'target_id', 'message_group_id', 'editor_data', 'summary', 'usage', 'workspace_id', 'messages_tsv'],
-  requiredForInsert: ['id', 'role'],
+  requiredForInsert: ['role'],
   primaryKey: 'id',
   foreignKeys: {
     user_id: { table: 'users', column: 'id', $type: null as unknown as Users },
@@ -2284,7 +2284,7 @@ export interface MessagesFiles {
   workspace_id: string | null;
 }
 export interface MessagesFilesInput {
-  file_id: string;
+  file_id?: string;
   message_id: string;
   user_id?: string;
   workspace_id?: string | null;
@@ -2292,7 +2292,7 @@ export interface MessagesFilesInput {
 const messages_files = {
   tableName: 'messages_files',
   columns: ['file_id', 'message_id', 'user_id', 'workspace_id'],
-  requiredForInsert: ['file_id', 'message_id'],
+  requiredForInsert: ['message_id'],
   primaryKey: 'file_id',
   foreignKeys: {
     file_id: { table: 'files', column: 'id', $type: null as unknown as Files },
@@ -2468,7 +2468,7 @@ export interface OauthHandoffs {
   updated_at: string;
 }
 export interface OauthHandoffsInput {
-  id: string;
+  id?: string;
   client: string;
   payload: Json;
   accessed_at?: string;
@@ -2478,7 +2478,7 @@ export interface OauthHandoffsInput {
 const oauth_handoffs = {
   tableName: 'oauth_handoffs',
   columns: ['id', 'client', 'payload', 'accessed_at', 'created_at', 'updated_at'],
-  requiredForInsert: ['id', 'client', 'payload'],
+  requiredForInsert: ['client', 'payload'],
   primaryKey: 'id',
   foreignKeys: {},
   $type: null as unknown as OauthHandoffs,
@@ -2499,7 +2499,7 @@ export interface OidcAccessTokens {
   updated_at: string;
 }
 export interface OidcAccessTokensInput {
-  id: string;
+  id?: string;
   data: Json;
   expires_at: string;
   consumed_at?: string | null;
@@ -2513,7 +2513,7 @@ export interface OidcAccessTokensInput {
 const oidc_access_tokens = {
   tableName: 'oidc_access_tokens',
   columns: ['id', 'data', 'expires_at', 'consumed_at', 'user_id', 'client_id', 'grant_id', 'accessed_at', 'created_at', 'updated_at'],
-  requiredForInsert: ['id', 'data', 'expires_at', 'client_id'],
+  requiredForInsert: ['data', 'expires_at', 'client_id'],
   primaryKey: 'id',
   foreignKeys: { user_id: { table: 'users', column: 'id', $type: null as unknown as Users }, },
   $type: null as unknown as OidcAccessTokens,
@@ -2534,7 +2534,7 @@ export interface OidcAuthorizationCodes {
   updated_at: string;
 }
 export interface OidcAuthorizationCodesInput {
-  id: string;
+  id?: string;
   data: Json;
   expires_at: string;
   consumed_at?: string | null;
@@ -2548,7 +2548,7 @@ export interface OidcAuthorizationCodesInput {
 const oidc_authorization_codes = {
   tableName: 'oidc_authorization_codes',
   columns: ['id', 'data', 'expires_at', 'consumed_at', 'user_id', 'client_id', 'grant_id', 'accessed_at', 'created_at', 'updated_at'],
-  requiredForInsert: ['id', 'data', 'expires_at', 'client_id'],
+  requiredForInsert: ['data', 'expires_at', 'client_id'],
   primaryKey: 'id',
   foreignKeys: { user_id: { table: 'users', column: 'id', $type: null as unknown as Users }, },
   $type: null as unknown as OidcAuthorizationCodes,
@@ -2577,7 +2577,7 @@ export interface OidcClients {
   updated_at: string;
 }
 export interface OidcClientsInput {
-  id: string;
+  id?: string;
   name: string;
   description?: string | null;
   client_secret?: string | null;
@@ -2599,7 +2599,7 @@ export interface OidcClientsInput {
 const oidc_clients = {
   tableName: 'oidc_clients',
   columns: ['id', 'name', 'description', 'client_secret', 'redirect_uris', 'grants', 'response_types', 'scopes', 'token_endpoint_auth_method', 'application_type', 'client_uri', 'logo_uri', 'policy_uri', 'tos_uri', 'is_first_party', 'accessed_at', 'created_at', 'updated_at'],
-  requiredForInsert: ['id', 'name', 'redirect_uris', 'grants', 'response_types', 'scopes'],
+  requiredForInsert: ['name', 'redirect_uris', 'grants', 'response_types', 'scopes'],
   primaryKey: 'id',
   foreignKeys: {},
   $type: null as unknown as OidcClients,
@@ -2653,7 +2653,7 @@ export interface OidcDeviceCodes {
   updated_at: string;
 }
 export interface OidcDeviceCodesInput {
-  id: string;
+  id?: string;
   data: Json;
   expires_at: string;
   consumed_at?: string | null;
@@ -2668,7 +2668,7 @@ export interface OidcDeviceCodesInput {
 const oidc_device_codes = {
   tableName: 'oidc_device_codes',
   columns: ['id', 'data', 'expires_at', 'consumed_at', 'user_id', 'client_id', 'grant_id', 'user_code', 'accessed_at', 'created_at', 'updated_at'],
-  requiredForInsert: ['id', 'data', 'expires_at', 'client_id'],
+  requiredForInsert: ['data', 'expires_at', 'client_id'],
   primaryKey: 'id',
   foreignKeys: { user_id: { table: 'users', column: 'id', $type: null as unknown as Users }, },
   $type: null as unknown as OidcDeviceCodes,
@@ -2688,7 +2688,7 @@ export interface OidcGrants {
   updated_at: string;
 }
 export interface OidcGrantsInput {
-  id: string;
+  id?: string;
   data: Json;
   expires_at: string;
   consumed_at?: string | null;
@@ -2701,7 +2701,7 @@ export interface OidcGrantsInput {
 const oidc_grants = {
   tableName: 'oidc_grants',
   columns: ['id', 'data', 'expires_at', 'consumed_at', 'user_id', 'client_id', 'accessed_at', 'created_at', 'updated_at'],
-  requiredForInsert: ['id', 'data', 'expires_at', 'client_id'],
+  requiredForInsert: ['data', 'expires_at', 'client_id'],
   primaryKey: 'id',
   foreignKeys: { user_id: { table: 'users', column: 'id', $type: null as unknown as Users }, },
   $type: null as unknown as OidcGrants,
@@ -2718,7 +2718,7 @@ export interface OidcInteractions {
   updated_at: string;
 }
 export interface OidcInteractionsInput {
-  id: string;
+  id?: string;
   data: Json;
   expires_at: string;
   accessed_at?: string;
@@ -2728,7 +2728,7 @@ export interface OidcInteractionsInput {
 const oidc_interactions = {
   tableName: 'oidc_interactions',
   columns: ['id', 'data', 'expires_at', 'accessed_at', 'created_at', 'updated_at'],
-  requiredForInsert: ['id', 'data', 'expires_at'],
+  requiredForInsert: ['data', 'expires_at'],
   primaryKey: 'id',
   foreignKeys: {},
   $type: null as unknown as OidcInteractions,
@@ -2749,7 +2749,7 @@ export interface OidcRefreshTokens {
   updated_at: string;
 }
 export interface OidcRefreshTokensInput {
-  id: string;
+  id?: string;
   data: Json;
   expires_at: string;
   consumed_at?: string | null;
@@ -2763,7 +2763,7 @@ export interface OidcRefreshTokensInput {
 const oidc_refresh_tokens = {
   tableName: 'oidc_refresh_tokens',
   columns: ['id', 'data', 'expires_at', 'consumed_at', 'user_id', 'client_id', 'grant_id', 'accessed_at', 'created_at', 'updated_at'],
-  requiredForInsert: ['id', 'data', 'expires_at', 'client_id'],
+  requiredForInsert: ['data', 'expires_at', 'client_id'],
   primaryKey: 'id',
   foreignKeys: { user_id: { table: 'users', column: 'id', $type: null as unknown as Users }, },
   $type: null as unknown as OidcRefreshTokens,
@@ -2781,7 +2781,7 @@ export interface OidcSessions {
   updated_at: string;
 }
 export interface OidcSessionsInput {
-  id: string;
+  id?: string;
   data: Json;
   expires_at: string;
   user_id?: string;
@@ -2792,7 +2792,7 @@ export interface OidcSessionsInput {
 const oidc_sessions = {
   tableName: 'oidc_sessions',
   columns: ['id', 'data', 'expires_at', 'user_id', 'accessed_at', 'created_at', 'updated_at'],
-  requiredForInsert: ['id', 'data', 'expires_at'],
+  requiredForInsert: ['data', 'expires_at'],
   primaryKey: 'id',
   foreignKeys: { user_id: { table: 'users', column: 'id', $type: null as unknown as Users }, },
   $type: null as unknown as OidcSessions,
@@ -2856,13 +2856,13 @@ export interface RagEvalDatasetRecordsInput {
   created_at?: string;
   accessed_at?: string;
   updated_at?: string;
-  id: string;
+  id?: string;
   workspace_id?: string | null;
 }
 const rag_eval_dataset_records = {
   tableName: 'rag_eval_dataset_records',
   columns: ['dataset_id', 'ideal', 'question', 'reference_files', 'metadata', 'user_id', 'created_at', 'accessed_at', 'updated_at', 'id', 'workspace_id'],
-  requiredForInsert: ['dataset_id', 'id'],
+  requiredForInsert: ['dataset_id'],
   primaryKey: 'id',
   foreignKeys: {
     dataset_id: { table: 'rag_eval_datasets', column: 'id', $type: null as unknown as RagEvalDatasets },
@@ -2893,13 +2893,13 @@ export interface RagEvalDatasetsInput {
   updated_at?: string;
   created_at?: string;
   accessed_at?: string;
-  id: string;
+  id?: string;
   workspace_id?: string | null;
 }
 const rag_eval_datasets = {
   tableName: 'rag_eval_datasets',
   columns: ['description', 'name', 'knowledge_base_id', 'user_id', 'updated_at', 'created_at', 'accessed_at', 'id', 'workspace_id'],
-  requiredForInsert: ['name', 'id'],
+  requiredForInsert: ['name'],
   primaryKey: 'id',
   foreignKeys: {
     knowledge_base_id: { table: 'knowledge_bases', column: 'id', $type: null as unknown as KnowledgeBases },
@@ -2948,13 +2948,13 @@ export interface RagEvalEvaluationRecordsInput {
   created_at?: string;
   accessed_at?: string;
   updated_at?: string;
-  id: string;
+  id?: string;
   workspace_id?: string | null;
 }
 const rag_eval_evaluation_records = {
   tableName: 'rag_eval_evaluation_records',
   columns: ['question', 'answer', 'context', 'ideal', 'status', 'error', 'language_model', 'embedding_model', 'question_embedding_id', 'duration', 'dataset_record_id', 'evaluation_id', 'user_id', 'created_at', 'accessed_at', 'updated_at', 'id', 'workspace_id'],
-  requiredForInsert: ['question', 'dataset_record_id', 'evaluation_id', 'id'],
+  requiredForInsert: ['question', 'dataset_record_id', 'evaluation_id'],
   primaryKey: 'id',
   foreignKeys: {
     question_embedding_id: { table: 'embeddings', column: 'id', $type: null as unknown as Embeddings },
@@ -2997,13 +2997,13 @@ export interface RagEvalEvaluationsInput {
   created_at?: string;
   updated_at?: string;
   accessed_at?: string;
-  id: string;
+  id?: string;
   workspace_id?: string | null;
 }
 const rag_eval_evaluations = {
   tableName: 'rag_eval_evaluations',
   columns: ['name', 'description', 'eval_records_url', 'status', 'error', 'dataset_id', 'knowledge_base_id', 'language_model', 'embedding_model', 'user_id', 'created_at', 'updated_at', 'accessed_at', 'id', 'workspace_id'],
-  requiredForInsert: ['name', 'dataset_id', 'id'],
+  requiredForInsert: ['name', 'dataset_id'],
   primaryKey: 'id',
   foreignKeys: {
     dataset_id: { table: 'rag_eval_datasets', column: 'id', $type: null as unknown as RagEvalDatasets },
@@ -3036,12 +3036,12 @@ export interface RbacPermissionsInput {
   accessed_at?: string;
   created_at?: string;
   updated_at?: string;
-  id: string;
+  id?: string;
 }
 const rbac_permissions = {
   tableName: 'rbac_permissions',
   columns: ['code', 'name', 'description', 'category', 'is_active', 'accessed_at', 'created_at', 'updated_at', 'id'],
-  requiredForInsert: ['code', 'name', 'category', 'id'],
+  requiredForInsert: ['code', 'name', 'category'],
   primaryKey: 'id',
   foreignKeys: {},
   $type: null as unknown as RbacPermissions,
@@ -3055,14 +3055,14 @@ export interface RbacRolePermissions {
   created_at: string;
 }
 export interface RbacRolePermissionsInput {
-  role_id: string;
+  role_id?: string;
   permission_id: string;
   created_at?: string;
 }
 const rbac_role_permissions = {
   tableName: 'rbac_role_permissions',
   columns: ['role_id', 'permission_id', 'created_at'],
-  requiredForInsert: ['role_id', 'permission_id'],
+  requiredForInsert: ['permission_id'],
   primaryKey: 'role_id',
   foreignKeys: {
     role_id: { table: 'rbac_roles', column: 'id', $type: null as unknown as RbacRoles },
@@ -3096,13 +3096,13 @@ export interface RbacRolesInput {
   created_at?: string;
   updated_at?: string;
   metadata?: Json | null;
-  id: string;
+  id?: string;
   workspace_id?: string | null;
 }
 const rbac_roles = {
   tableName: 'rbac_roles',
   columns: ['name', 'display_name', 'description', 'is_system', 'is_active', 'accessed_at', 'created_at', 'updated_at', 'metadata', 'id', 'workspace_id'],
-  requiredForInsert: ['name', 'display_name', 'id'],
+  requiredForInsert: ['name', 'display_name'],
   primaryKey: 'id',
   foreignKeys: { workspace_id: { table: 'workspaces', column: 'id', $type: null as unknown as Workspaces }, },
   $type: null as unknown as RbacRoles,
@@ -3153,7 +3153,7 @@ export interface SessionGroups {
   workspace_id: string | null;
 }
 export interface SessionGroupsInput {
-  id: string;
+  id?: string;
   name: string;
   sort?: number | null;
   user_id?: string;
@@ -3166,7 +3166,7 @@ export interface SessionGroupsInput {
 const session_groups = {
   tableName: 'session_groups',
   columns: ['id', 'name', 'sort', 'user_id', 'created_at', 'updated_at', 'client_id', 'accessed_at', 'workspace_id'],
-  requiredForInsert: ['id', 'name'],
+  requiredForInsert: ['name'],
   primaryKey: 'id',
   foreignKeys: {
     user_id: { table: 'users', column: 'id', $type: null as unknown as Users },
@@ -3196,7 +3196,7 @@ export interface Sessions {
   metadata: Json | null;
 }
 export interface SessionsInput {
-  id: string;
+  id?: string;
   slug: string;
   title?: string | null;
   description?: string | null;
@@ -3216,7 +3216,7 @@ export interface SessionsInput {
 const sessions = {
   tableName: 'sessions',
   columns: ['id', 'slug', 'title', 'description', 'avatar', 'background_color', 'type', 'user_id', 'group_id', 'pinned', 'created_at', 'updated_at', 'client_id', 'accessed_at', 'workspace_id', 'metadata'],
-  requiredForInsert: ['id', 'slug'],
+  requiredForInsert: ['slug'],
   primaryKey: 'id',
   foreignKeys: {
     user_id: { table: 'users', column: 'id', $type: null as unknown as Users },
@@ -3279,7 +3279,7 @@ export interface TaskComments {
   workspace_id: string | null;
 }
 export interface TaskCommentsInput {
-  id: string;
+  id?: string;
   task_id: string;
   user_id?: string;
   author_user_id?: string | null;
@@ -3296,7 +3296,7 @@ export interface TaskCommentsInput {
 const task_comments = {
   tableName: 'task_comments',
   columns: ['id', 'task_id', 'user_id', 'author_user_id', 'author_agent_id', 'content', 'editor_data', 'brief_id', 'topic_id', 'accessed_at', 'created_at', 'updated_at', 'workspace_id'],
-  requiredForInsert: ['id', 'task_id', 'content'],
+  requiredForInsert: ['task_id', 'content'],
   primaryKey: 'id',
   foreignKeys: {
     task_id: { table: 'tasks', column: 'id', $type: null as unknown as Tasks },
@@ -3472,7 +3472,7 @@ export interface Tasks {
   workspace_id: string | null;
 }
 export interface TasksInput {
-  id: string;
+  id?: string;
   identifier: string;
   seq: number;
   created_by_user_id: string;
@@ -3509,7 +3509,7 @@ export interface TasksInput {
 const tasks = {
   tableName: 'tasks',
   columns: ['id', 'identifier', 'seq', 'created_by_user_id', 'created_by_agent_id', 'assignee_user_id', 'assignee_agent_id', 'parent_task_id', 'name', 'description', 'instruction', 'status', 'priority', 'sort_order', 'heartbeat_interval', 'heartbeat_timeout', 'last_heartbeat_at', 'schedule_pattern', 'schedule_timezone', 'total_topics', 'max_topics', 'current_topic_id', 'context', 'config', 'error', 'started_at', 'completed_at', 'accessed_at', 'created_at', 'updated_at', 'automation_mode', 'editor_data', 'workspace_id'],
-  requiredForInsert: ['id', 'identifier', 'seq', 'created_by_user_id', 'instruction'],
+  requiredForInsert: ['identifier', 'seq', 'created_by_user_id', 'instruction'],
   primaryKey: 'id',
   foreignKeys: {
     created_by_user_id: { table: 'users', column: 'id', $type: null as unknown as Users },
@@ -3547,7 +3547,7 @@ export interface Threads {
   workspace_id: string | null;
 }
 export interface ThreadsInput {
-  id: string;
+  id?: string;
   title?: string | null;
   type: string;
   status?: string | null;
@@ -3570,7 +3570,7 @@ export interface ThreadsInput {
 const threads = {
   tableName: 'threads',
   columns: ['id', 'title', 'type', 'status', 'topic_id', 'source_message_id', 'parent_thread_id', 'user_id', 'last_active_at', 'accessed_at', 'created_at', 'updated_at', 'client_id', 'content', 'editor_data', 'agent_id', 'group_id', 'metadata', 'workspace_id'],
-  requiredForInsert: ['id', 'type', 'topic_id'],
+  requiredForInsert: ['type', 'topic_id'],
   primaryKey: 'id',
   foreignKeys: {
     topic_id: { table: 'topics', column: 'id', $type: null as unknown as Topics },
@@ -3593,7 +3593,7 @@ export interface TopicDocuments {
   workspace_id: string | null;
 }
 export interface TopicDocumentsInput {
-  document_id: string;
+  document_id?: string;
   topic_id: string;
   user_id?: string;
   created_at?: string;
@@ -3602,7 +3602,7 @@ export interface TopicDocumentsInput {
 const topic_documents = {
   tableName: 'topic_documents',
   columns: ['document_id', 'topic_id', 'user_id', 'created_at', 'workspace_id'],
-  requiredForInsert: ['document_id', 'topic_id'],
+  requiredForInsert: ['topic_id'],
   primaryKey: 'document_id',
   foreignKeys: {
     document_id: { table: 'documents', column: 'id', $type: null as unknown as Documents },
@@ -3627,7 +3627,7 @@ export interface TopicShares {
   workspace_id: string | null;
 }
 export interface TopicSharesInput {
-  id: string;
+  id?: string;
   topic_id: string;
   user_id?: string;
   visibility?: string;
@@ -3640,7 +3640,7 @@ export interface TopicSharesInput {
 const topic_shares = {
   tableName: 'topic_shares',
   columns: ['id', 'topic_id', 'user_id', 'visibility', 'page_view_count', 'accessed_at', 'created_at', 'updated_at', 'workspace_id'],
-  requiredForInsert: ['id', 'topic_id'],
+  requiredForInsert: ['topic_id'],
   primaryKey: 'id',
   foreignKeys: {
     topic_id: { table: 'topics', column: 'id', $type: null as unknown as Topics },
@@ -3686,7 +3686,7 @@ export interface Topics {
   topics_tsv: string | null;
 }
 export interface TopicsInput {
-  id: string;
+  id?: string;
   session_id?: string | null;
   user_id?: string;
   favorite?: boolean | null;
@@ -3721,7 +3721,7 @@ export interface TopicsInput {
 const topics = {
   tableName: 'topics',
   columns: ['id', 'session_id', 'user_id', 'favorite', 'title', 'created_at', 'updated_at', 'client_id', 'accessed_at', 'history_summary', 'metadata', 'group_id', 'content', 'editor_data', 'agent_id', 'trigger', 'mode', 'description', 'status', 'completed_at', 'total_cost', 'total_input_tokens', 'total_output_tokens', 'total_tokens', 'cost', 'usage', 'model', 'provider', 'sender_id', 'workspace_id', 'topics_tsv'],
-  requiredForInsert: ['id'],
+  requiredForInsert: [],
   primaryKey: 'id',
   foreignKeys: {
     session_id: { table: 'sessions', column: 'id', $type: null as unknown as Sessions },
@@ -3957,7 +3957,7 @@ export interface UserMemories {
   user_memories_tsv: string | null;
 }
 export interface UserMemoriesInput {
-  id: string;
+  id?: string;
   user_id?: string | null;
   memory_category?: string | null;
   memory_layer?: string | null;
@@ -3981,7 +3981,7 @@ export interface UserMemoriesInput {
 const user_memories = {
   tableName: 'user_memories',
   columns: ['id', 'user_id', 'memory_category', 'memory_layer', 'memory_type', 'title', 'summary', 'summary_vector_1024', 'details', 'details_vector_1024', 'status', 'accessed_count', 'last_accessed_at', 'accessed_at', 'created_at', 'updated_at', 'metadata', 'tags', 'captured_at', 'user_memories_tsv'],
-  requiredForInsert: ['id'],
+  requiredForInsert: [],
   primaryKey: 'id',
   foreignKeys: { user_id: { table: 'users', column: 'id', $type: null as unknown as Users }, },
   $type: null as unknown as UserMemories,
@@ -4286,7 +4286,7 @@ export interface UserMemoryPersonaDocumentHistories {
   updated_at: string;
 }
 export interface UserMemoryPersonaDocumentHistoriesInput {
-  id: string;
+  id?: string;
   user_id?: string | null;
   persona_id?: string | null;
   profile?: string;
@@ -4311,7 +4311,7 @@ export interface UserMemoryPersonaDocumentHistoriesInput {
 const user_memory_persona_document_histories = {
   tableName: 'user_memory_persona_document_histories',
   columns: ['id', 'user_id', 'persona_id', 'profile', 'snapshot_persona', 'snapshot_tagline', 'reasoning', 'diff_persona', 'diff_tagline', 'snapshot', 'summary', 'edited_by', 'memory_ids', 'source_ids', 'metadata', 'previous_version', 'next_version', 'captured_at', 'accessed_at', 'created_at', 'updated_at'],
-  requiredForInsert: ['id'],
+  requiredForInsert: [],
   primaryKey: 'id',
   foreignKeys: {
     user_id: { table: 'users', column: 'id', $type: null as unknown as Users },
@@ -4339,7 +4339,7 @@ export interface UserMemoryPersonaDocuments {
   user_memory_persona_documents_tsv: string | null;
 }
 export interface UserMemoryPersonaDocumentsInput {
-  id: string;
+  id?: string;
   user_id?: string | null;
   profile?: string;
   tagline?: string | null;
@@ -4357,7 +4357,7 @@ export interface UserMemoryPersonaDocumentsInput {
 const user_memory_persona_documents = {
   tableName: 'user_memory_persona_documents',
   columns: ['id', 'user_id', 'profile', 'tagline', 'persona', 'memory_ids', 'source_ids', 'metadata', 'version', 'captured_at', 'accessed_at', 'created_at', 'updated_at', 'user_memory_persona_documents_tsv'],
-  requiredForInsert: ['id'],
+  requiredForInsert: [],
   primaryKey: 'id',
   foreignKeys: { user_id: { table: 'users', column: 'id', $type: null as unknown as Users }, },
   $type: null as unknown as UserMemoryPersonaDocuments,
@@ -4385,7 +4385,7 @@ export interface UserSettings {
   settings: Json | null;
 }
 export interface UserSettingsInput {
-  id: string;
+  id?: string;
   tts?: Json | null;
   key_vaults?: string | null;
   general?: Json | null;
@@ -4406,7 +4406,7 @@ export interface UserSettingsInput {
 const user_settings = {
   tableName: 'user_settings',
   columns: ['id', 'tts', 'key_vaults', 'general', 'language_model', 'system_agent', 'default_agent', 'tool', 'hotkey', 'image', 'market', 'memory', 'notification', 'interests', 'preference', 'guide', 'settings'],
-  requiredForInsert: ['id'],
+  requiredForInsert: [],
   primaryKey: 'id',
   foreignKeys: { id: { table: 'users', column: 'id', $type: null as unknown as Users }, },
   $type: null as unknown as UserSettings,
@@ -4444,7 +4444,7 @@ export interface Users {
   agent_onboarding: Json | null;
 }
 export interface UsersInput {
-  id: string;
+  id?: string;
   username?: string | null;
   email?: string | null;
   avatar?: string | null;
@@ -4475,7 +4475,7 @@ export interface UsersInput {
 const users = {
   tableName: 'users',
   columns: ['id', 'username', 'email', 'avatar', 'phone', 'first_name', 'last_name', 'is_onboarded', 'clerk_created_at', 'preference', 'created_at', 'updated_at', 'full_name', 'email_verified_at', 'accessed_at', 'email_verified', 'role', 'banned', 'ban_reason', 'ban_expires', 'two_factor_enabled', 'phone_number_verified', 'normalized_email', 'last_active_at', 'interests', 'onboarding', 'agent_onboarding'],
-  requiredForInsert: ['id'],
+  requiredForInsert: [],
   primaryKey: 'id',
   foreignKeys: {},
   $type: null as unknown as Users,
@@ -4607,7 +4607,7 @@ export interface VerifyRubricCriteria {
   created_at: string;
 }
 export interface VerifyRubricCriteriaInput {
-  rubric_id: string;
+  rubric_id?: string;
   criterion_id: string;
   user_id?: string;
   workspace_id?: string | null;
@@ -4617,7 +4617,7 @@ export interface VerifyRubricCriteriaInput {
 const verify_rubric_criteria = {
   tableName: 'verify_rubric_criteria',
   columns: ['rubric_id', 'criterion_id', 'user_id', 'workspace_id', 'sort_order', 'created_at'],
-  requiredForInsert: ['rubric_id', 'criterion_id'],
+  requiredForInsert: ['criterion_id'],
   primaryKey: 'rubric_id',
   foreignKeys: {
     rubric_id: { table: 'verify_rubrics', column: 'id', $type: null as unknown as VerifyRubrics },
@@ -4678,7 +4678,7 @@ export interface WorkspaceAuditLogs {
   created_at: string;
 }
 export interface WorkspaceAuditLogsInput {
-  id: string;
+  id?: string;
   workspace_id: string;
   user_id?: string | null;
   action: string;
@@ -4691,7 +4691,7 @@ export interface WorkspaceAuditLogsInput {
 const workspace_audit_logs = {
   tableName: 'workspace_audit_logs',
   columns: ['id', 'workspace_id', 'user_id', 'action', 'resource_type', 'resource_id', 'metadata', 'ip_address', 'created_at'],
-  requiredForInsert: ['id', 'workspace_id', 'action'],
+  requiredForInsert: ['workspace_id', 'action'],
   primaryKey: 'id',
   foreignKeys: { workspace_id: { table: 'workspaces', column: 'id', $type: null as unknown as Workspaces }, },
   $type: null as unknown as WorkspaceAuditLogs,
@@ -4712,7 +4712,7 @@ export interface WorkspaceInvitations {
   updated_at: string;
 }
 export interface WorkspaceInvitationsInput {
-  id: string;
+  id?: string;
   workspace_id: string;
   inviter_id: string;
   email?: string | null;
@@ -4726,7 +4726,7 @@ export interface WorkspaceInvitationsInput {
 const workspace_invitations = {
   tableName: 'workspace_invitations',
   columns: ['id', 'workspace_id', 'inviter_id', 'email', 'role', 'token', 'status', 'expires_at', 'created_at', 'updated_at'],
-  requiredForInsert: ['id', 'workspace_id', 'inviter_id', 'token', 'expires_at'],
+  requiredForInsert: ['workspace_id', 'inviter_id', 'token', 'expires_at'],
   primaryKey: 'id',
   foreignKeys: {
     workspace_id: { table: 'workspaces', column: 'id', $type: null as unknown as Workspaces },
@@ -4746,7 +4746,7 @@ export interface WorkspaceMembers {
   deleted_at: string | null;
 }
 export interface WorkspaceMembersInput {
-  workspace_id: string;
+  workspace_id?: string;
   user_id?: string;
   role?: string;
   joined_at?: string;
@@ -4756,7 +4756,7 @@ export interface WorkspaceMembersInput {
 const workspace_members = {
   tableName: 'workspace_members',
   columns: ['workspace_id', 'user_id', 'role', 'joined_at', 'updated_at', 'deleted_at'],
-  requiredForInsert: ['workspace_id'],
+  requiredForInsert: [],
   primaryKey: 'workspace_id',
   foreignKeys: {
     workspace_id: { table: 'workspaces', column: 'id', $type: null as unknown as Workspaces },
@@ -4779,7 +4779,7 @@ export interface Workspaces {
   updated_at: string;
 }
 export interface WorkspacesInput {
-  id: string;
+  id?: string;
   slug: string;
   name: string;
   description?: string | null;
@@ -4792,7 +4792,7 @@ export interface WorkspacesInput {
 const workspaces = {
   tableName: 'workspaces',
   columns: ['id', 'slug', 'name', 'description', 'avatar', 'primary_owner_id', 'settings', 'created_at', 'updated_at'],
-  requiredForInsert: ['id', 'slug', 'name', 'primary_owner_id'],
+  requiredForInsert: ['slug', 'name', 'primary_owner_id'],
   primaryKey: 'id',
   foreignKeys: { primary_owner_id: { table: 'users', column: 'id', $type: null as unknown as Users }, },
   $type: null as unknown as Workspaces,
