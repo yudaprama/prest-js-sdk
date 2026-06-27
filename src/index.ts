@@ -59,6 +59,13 @@ export interface PrestConfig {
   rawAuthHeader?: string;
   /** Optional: extra headers merged into every request */
   headers?: Record<string, string>;
+  /**
+   * Optional: fetch credentials mode. Set to `"include"` to send cookies on
+   * cross-origin requests — required when pREST sits behind a cookie-auth edge
+   * (e.g. Ory Oathkeeper validating a Kratos session). Defaults to fetch's
+   * `"same-origin"`.
+   */
+  credentials?: RequestCredentials;
 }
 
 /**
@@ -273,6 +280,7 @@ export class PrestClient {
   private readonly prestUrl: string;
   private authHeader: string | undefined;
   private readonly extraHeaders: Record<string, string>;
+  private readonly credentials: RequestCredentials | undefined;
 
   constructor(config: PrestConfig | string) {
     if (typeof config === "string") {
@@ -281,12 +289,14 @@ export class PrestClient {
       const token = arguments[1] as string | undefined;
       this.authHeader = token ? `Bearer ${token}` : undefined;
       this.extraHeaders = {};
+      this.credentials = undefined;
     } else {
       this.prestUrl = config.prestUrl.replace(/\/+$/, "");
       this.authHeader =
         config.rawAuthHeader ??
         (config.authToken ? `Bearer ${config.authToken}` : undefined);
       this.extraHeaders = { ...(config.headers ?? {}) };
+      this.credentials = config.credentials;
     }
   }
 
@@ -366,6 +376,7 @@ export class PrestClient {
       },
       body: init?.body ?? null,
       redirect: "manual",
+      ...(this.credentials ? { credentials: this.credentials } : {}),
     });
 
     const text = await res.text();
