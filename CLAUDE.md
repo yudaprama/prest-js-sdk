@@ -181,20 +181,20 @@ const client = new PrestClient("http://localhost:3000");
 await client.databases();
 await client.schemas();
 await client.tables();
-await client.tablesIn("yarsew", "public");
-await client.showTable("yarsew", "public", "users");
+await client.tablesIn("plano", "public");
+await client.showTable("plano", "public", "users");
 
 // CRUD with typed filter
-await client.select("yarsew", "public", "billing_balances", {
+await client.select("plano", "public", "billing_balances", {
   where: { actor_id: 42, status: { eq: "active" } },
   select: ["id", "amount"],
   order: ["amount:desc"],
   page: 1, size: 20,
 });
-await client.insert("yarsew", "public", "billing_balances", { actor_id: 42, amount: 100 });
-await client.insertBatch("yarsew", "public", "billing_balances", [/* ... */]);
-await client.update("yarsew", "public", "billing_balances", { actor_id: 42 }, { status: "frozen" });
-await client.delete("yarsew", "public", "billing_balances", { actor_id: 42 });
+await client.insert("plano", "public", "billing_balances", { actor_id: 42, amount: 100 });
+await client.insertBatch("plano", "public", "billing_balances", [/* ... */]);
+await client.update("plano", "public", "billing_balances", { actor_id: 42 }, { status: "frozen" });
+await client.delete("plano", "public", "billing_balances", { actor_id: 42 });
 
 // Stored SQL
 await client.query("reports", "top_balances", { min: 1000 });

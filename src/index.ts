@@ -14,7 +14,7 @@
  *   const dbs = await client.databases();
  *
  *   // Query with typed filter
- *   const rows = await client.select<Balance>("yarsew", "public", "billing_balances", {
+ *   const rows = await client.select<Balance>("plano", "public", "billing_balances", {
  *     where: { actor_id: { eq: 42 }, status: "active" },
  *     select: ["id", "balance"],
  *     order: ["balance:desc"],
@@ -22,19 +22,19 @@
  *   });
  *
  *   // Insert
- *   const [row] = await client.insert<Balance>("yarsew", "public", "billing_balances", {
+ *   const [row] = await client.insert<Balance>("plano", "public", "billing_balances", {
  *     actor_id: 42, balance: 100.50, status: "active",
  *   });
  *
  *   // Update (filter + new values)
  *   const updated = await client.update<Balance>(
- *     "yarsew", "public", "billing_balances",
+ *     "plano", "public", "billing_balances",
  *     { actor_id: 42 },
  *     { status: "frozen" },
  *   );
  *
  *   // Delete
- *   await client.delete("yarsew", "public", "billing_balances", { actor_id: 42 });
+ *   await client.delete("plano", "public", "billing_balances", { actor_id: 42 });
  *
  *   // Stored SQL (prest/etc/queries/reports/top_balances.sql)
  *   const top = await client.query<Balance>("reports", "top_balances", { min: 1000 });

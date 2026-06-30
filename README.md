@@ -36,8 +36,8 @@ if (!client) throw new Error("No valid Kratos session");
 await client.databases();                 // GET /databases
 await client.schemas();                   // GET /schemas
 await client.tables();                    // GET /tables
-await client.tablesIn("yarsew", "public");          // GET /yarsew/public
-await client.showTable("yarsew", "public", "users");  // GET /show/yarsew/public/users
+await client.tablesIn("plano", "public");          // GET /plano/public
+await client.showTable("plano", "public", "users");  // GET /show/plano/public/users
 ```
 
 ## Select with typed filter
@@ -45,7 +45,7 @@ await client.showTable("yarsew", "public", "users");  // GET /show/yarsew/public
 ```ts
 interface Balance { id: number; actor_id: number; amount: number; status: string }
 
-const rows = await client.select<Balance>("yarsew", "public", "billing_balances", {
+const rows = await client.select<Balance>("plano", "public", "billing_balances", {
   where: {
     actor_id: 42,                       // shorthand → eq.42
     status: { eq: "active" },
@@ -64,25 +64,25 @@ const rows = await client.select<Balance>("yarsew", "public", "billing_balances"
 ```ts
 // Insert single row
 const [created] = await client.insert<Balance>(
-  "yarsew", "public", "billing_balances",
+  "plano", "public", "billing_balances",
   { actor_id: 42, amount: 99.95, status: "active" },
 );
 
 // Insert batch
-await client.insertBatch("yarsew", "public", "billing_balances", [
+await client.insertBatch("plano", "public", "billing_balances", [
   { actor_id: 1, amount: 10 },
   { actor_id: 2, amount: 20 },
 ]);
 
 // Update — filter rows, then mutate
 await client.update<Balance>(
-  "yarsew", "public", "billing_balances",
+  "plano", "public", "billing_balances",
   { actor_id: 42 },                       // WHERE
   { status: "frozen" },                   // SET
 );
 
 // Delete — filter rows
-await client.delete("yarsew", "public", "billing_balances", { actor_id: 42 });
+await client.delete("plano", "public", "billing_balances", { actor_id: 42 });
 ```
 
 ## Stored SQL queries
